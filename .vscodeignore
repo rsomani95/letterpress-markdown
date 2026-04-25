@@ -1,0 +1,24 @@
+# Source files (we ship dist/ instead)
+src/**
+tsconfig.json
+**/*.ts
+**/*.map
+
+# Build / package outputs
+dist-vsix/**
+*.vsix
+
+# Dev tooling
+node_modules/**
+package-lock.json
+
+# Repo hygiene
+.git/**
+.gitignore
+.vscode/**
+.DS_Store
+**/*.swp
+**/*.swo
+
+# This file itself
+.vscodeignore

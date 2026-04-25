@@ -1,0 +1,67 @@
+{
+  "name": "letterpress-markdown",
+  "displayName": "Letterpress Markdown",
+  "description": "Centered, typographically refined markdown preview with word counter",
+  "version": "0.2.0",
+  "publisher": "rsomani95",
+  "license": "MIT",
+  "icon": "icon.png",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other",
+    "Visualization"
+  ],
+  "keywords": [
+    "markdown",
+    "preview",
+    "typography",
+    "word-count",
+    "fold"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rsomani95/home-manager.git",
+    "directory": "vscode-themes/letterpress-markdown"
+  },
+  "homepage": "https://github.com/rsomani95/home-manager/tree/main/vscode-themes/letterpress-markdown",
+  "bugs": {
+    "url": "https://github.com/rsomani95/home-manager/issues"
+  },
+  "galleryBanner": {
+    "color": "#0d1117",
+    "theme": "dark"
+  },
+  "extensionKind": [
+    "ui",
+    "workspace"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:markdown",
+    "onLanguage:skill"
+  ],
+  "contributes": {
+    "markdown.previewStyles": [
+      "./styles/fonts.css",
+      "./styles/preview.css"
+    ],
+    "markdown.previewScripts": [
+      "./scripts/fold.js",
+      "./scripts/width-slider.js"
+    ],
+    "configurationDefaults": {}
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "vscode:prepublish": "npm run build",
+    "package": "mkdir -p dist-vsix && vsce package --out dist-vsix/",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "@vscode/vsce": "^3.9.1",
+    "typescript": "^6.0.2"
+  }
+}

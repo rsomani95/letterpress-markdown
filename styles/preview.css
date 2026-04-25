@@ -1,0 +1,348 @@
+/* Letterpress Markdown Preview
+ * Theme-agnostic editorial styling for VSCode markdown preview.
+ * Colors adapt to any theme via color-mix() on CSS variables. */
+
+:root {
+  --rhythm: 1.5rem;
+  --letterpress-width: 720px;
+}
+
+/* ── Layout ── */
+
+html, body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: var(--letterpress-width, 720px);
+  margin: 0 auto;
+  padding: 2em 1.5em;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 85%, transparent);
+}
+
+/* ── Headings ── */
+
+h1, h2, h3 {
+  font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: normal;
+  line-height: 1.3;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 90%, transparent);
+}
+
+h4, h5, h6 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 75%, transparent);
+}
+
+h1 {
+  font-size: 2.2em;
+  margin-top: 0;
+  margin-bottom: var(--rhythm);
+  padding-bottom: 0.4em;
+  border: none;
+  background-image: linear-gradient(
+    to right,
+    transparent,
+    color-mix(in srgb, var(--vscode-editor-foreground) 12%, transparent) 5%,
+    color-mix(in srgb, var(--vscode-editor-foreground) 12%, transparent) 95%,
+    transparent
+  );
+  background-size: 100% 1px;
+  background-position: bottom;
+  background-repeat: no-repeat;
+}
+
+h2 {
+  font-size: 1.6em;
+  margin-top: calc(var(--rhythm) * 2);
+  margin-bottom: var(--rhythm);
+  padding-bottom: 0.3em;
+  border-bottom: none;
+  background-image: linear-gradient(
+    to right,
+    transparent,
+    color-mix(in srgb, var(--vscode-editor-foreground) 10%, transparent) 10%,
+    color-mix(in srgb, var(--vscode-editor-foreground) 10%, transparent) 90%,
+    transparent
+  );
+  background-size: 100% 1px;
+  background-position: bottom;
+  background-repeat: no-repeat;
+}
+
+h3 {
+  font-size: 1.3em;
+  margin-top: calc(var(--rhythm) * 1.5);
+  margin-bottom: calc(var(--rhythm) * 0.5);
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 85%, transparent);
+}
+
+h4 {
+  font-size: 1.05em;
+  margin-top: calc(var(--rhythm) * 1.25);
+  margin-bottom: calc(var(--rhythm) * 0.5);
+}
+
+h5 {
+  font-size: 0.95em;
+  margin-top: var(--rhythm);
+  margin-bottom: calc(var(--rhythm) * 0.25);
+}
+
+h6 {
+  font-size: 0.85em;
+  margin-top: var(--rhythm);
+  margin-bottom: calc(var(--rhythm) * 0.25);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Body text ── */
+
+p, ul, ol, dl {
+  margin-top: 0;
+  margin-bottom: var(--rhythm);
+}
+
+li p {
+  margin-bottom: 0.5em;
+}
+
+/* ── Blockquotes ── */
+
+blockquote {
+  margin: 0 0 var(--rhythm) 0;
+  padding: 0.5em 1.2em;
+  border-left-width: 3px;
+  border-left-style: solid;
+  border-left-color: color-mix(in srgb, var(--vscode-editor-foreground) 15%, transparent);
+  border-radius: 0;
+  font-style: italic;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 55%, transparent);
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Horizontal rules ── */
+
+hr {
+  border: none;
+  height: 1px;
+  margin: calc(var(--rhythm) * 2) 0;
+  background: linear-gradient(
+    to right,
+    transparent,
+    color-mix(in srgb, var(--vscode-editor-foreground) 15%, transparent) 20%,
+    color-mix(in srgb, var(--vscode-editor-foreground) 15%, transparent) 80%,
+    transparent
+  );
+}
+
+/* ── Code ── */
+
+code {
+  font-family: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', Consolas, monospace;
+  font-size: 0.9em;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 80%, transparent);
+}
+
+pre {
+  margin-bottom: var(--rhythm);
+  border-radius: 4px;
+}
+
+pre code {
+  font-size: 0.85em;
+  line-height: 1.5;
+  color: var(--vscode-editor-foreground);
+}
+
+/* ── Tables ── */
+
+table {
+  margin-bottom: var(--rhythm);
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 600;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 80%, transparent);
+  padding: 8px 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 20%, transparent);
+}
+
+td {
+  padding: 8px 12px;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 70%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 8%, transparent);
+}
+
+/* ── Links ── */
+
+a {
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--vscode-textLink-foreground, currentColor) 30%, transparent);
+  transition: border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: none;
+  border-bottom-color: var(--vscode-textLink-foreground, currentColor);
+}
+
+/* ── Images ── */
+
+img {
+  max-width: 100%;
+  border-radius: 4px;
+  margin: var(--rhythm) 0;
+}
+
+/* ── Lists ── */
+
+ul, ol {
+  padding-left: 1.5em;
+}
+
+li {
+  margin-bottom: 0.3em;
+}
+
+li > ul, li > ol {
+  margin-top: 0.3em;
+  margin-bottom: 0;
+}
+
+/* ── Strong and emphasis ── */
+
+strong {
+  font-weight: 600;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 92%, transparent);
+}
+
+em {
+  font-style: italic;
+}
+
+/* ── Folding ── */
+
+.letterpress-fold-chevron {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-style: normal;
+  font-size: 0.5em;
+  margin-right: 0.5em;
+  opacity: 0.3;
+  transition: opacity 0.15s ease;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  vertical-align: middle;
+}
+
+.letterpress-fold-chevron:hover {
+  opacity: 0.7;
+}
+
+.letterpress-collapsed .letterpress-fold-chevron {
+  opacity: 0.5;
+}
+
+.letterpress-folded {
+  display: none !important;
+}
+
+/* ── Width slider ── */
+
+.letterpress-width-slider {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  margin: -2em -1.5em var(--rhythm);
+  padding: 0.5em 1.5em;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 0.75em;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 60%, transparent);
+  background: color-mix(in srgb, var(--vscode-editor-background) 92%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-bottom: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 8%, transparent);
+  opacity: 0.15;
+  transition: opacity 0.2s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.letterpress-width-slider:hover,
+.letterpress-width-slider:focus-within {
+  opacity: 0.85;
+}
+
+.letterpress-width-slider__label {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  min-width: 4.5em;
+}
+
+.letterpress-width-slider__input {
+  flex: 1;
+  appearance: none;
+  -webkit-appearance: none;
+  height: 2px;
+  background: color-mix(in srgb, var(--vscode-editor-foreground) 15%, transparent);
+  outline: none;
+  cursor: ew-resize;
+}
+
+.letterpress-width-slider__input::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--vscode-editor-foreground) 70%, transparent);
+  border: none;
+  cursor: ew-resize;
+  transition: transform 0.1s ease;
+}
+
+.letterpress-width-slider__input::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.letterpress-width-slider__input::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--vscode-editor-foreground) 70%, transparent);
+  border: none;
+  cursor: ew-resize;
+}
+
+.letterpress-width-slider__reset {
+  appearance: none;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0 0.3em;
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+}
+
+.letterpress-width-slider__reset:hover {
+  opacity: 1;
+}
