@@ -261,6 +261,19 @@ em {
   display: none !important;
 }
 
+/* ── Color swatches ── */
+
+.letterpress-color-swatch {
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  margin-right: 0.4em;
+  vertical-align: -0.05em;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 20%, transparent);
+  box-sizing: border-box;
+}
+
 /* ── Width slider ── */
 
 .letterpress-width-slider {

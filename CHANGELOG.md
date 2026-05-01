@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0
+
+- Color swatches in preview. Inline `` `#hex` `` codes (3/4/6/8-digit) get a small filled circle prefix showing the actual color, like the editor's built-in color decorator. Block code (fenced ``` blocks) is left alone — those are usually CSS being read as code, not standalone references.
+
 ## 0.2.1
 
 - `extensionKind` set to `["workspace"]` only. Previously `["ui", "workspace"]` caused the local install to be preferred over the remote when both were present, which broke `markdown.previewStyles` for files on Remote-SSH hosts (CSS lived on the local machine, but the preview is rendered by the remote vscode-server). Workspace-only ensures the extension runs wherever the file lives.

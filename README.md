@@ -8,6 +8,8 @@ A VSCode extension for typographically refined markdown preview and a calmer edi
 
 **Width slider** — A faded slider at the top of the preview (brightens on hover) lets you resize the column live, anywhere from 480 to 1280px. The chosen width is remembered per-document, so each file restores its own preference. New documents inherit the last-used value. Click "reset" to return to 720px.
 
+**Color swatches** — Inline `` `#hex` `` codes get a small filled circle prefix showing the actual color, matching the editor's built-in color decorator. Supports 3/4/6/8-digit hex; block code is left alone.
+
 **Word counter** — Status bar item (bottom-right) showing total prose word count. Strips markdown syntax (code blocks, link URLs, heading markers) before counting. Shows selected word count when text is selected. Only visible for markdown files.
 
 **Editor defaults** — Soft `[markdown]` settings for a plaintext-like editing feel: word wrap at 80 columns, no line numbers, no minimap, no autocomplete. Override any of these in your `settings.json`.
