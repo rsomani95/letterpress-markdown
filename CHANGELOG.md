@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- `extensionKind` set to `["workspace"]` only. Previously `["ui", "workspace"]` caused the local install to be preferred over the remote when both were present, which broke `markdown.previewStyles` for files on Remote-SSH hosts (CSS lived on the local machine, but the preview is rendered by the remote vscode-server). Workspace-only ensures the extension runs wherever the file lives.
+
 ## 0.2.0
 
 - Renamed package from `rocinante-markdown` to `letterpress-markdown`. New extension ID: `rsomani95.letterpress-markdown` (publisher unchanged).
