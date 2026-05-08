@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1
+
+- Color swatches now only trigger for 6-digit hex codes (`#rrggbb`). Previously 3/4/8-digit forms were also matched, but the 3-digit form misfired on common references like `#109` (issue numbers).
+
 ## 0.3.0
 
 - Color swatches in preview. Inline `` `#hex` `` codes (3/4/6/8-digit) get a small filled circle prefix showing the actual color, like the editor's built-in color decorator. Block code (fenced ``` blocks) is left alone — those are usually CSS being read as code, not standalone references.
