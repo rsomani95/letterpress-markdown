@@ -2,7 +2,7 @@
   "name": "letterpress-markdown",
   "displayName": "Letterpress Markdown",
   "description": "Centered, typographically refined markdown preview with word counter",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "publisher": "rsomani95",
   "license": "MIT",
   "icon": "icon.png",
@@ -49,7 +49,8 @@
     "markdown.previewScripts": [
       "./scripts/fold.js",
       "./scripts/width-slider.js",
-      "./scripts/color-swatches.js"
+      "./scripts/color-swatches.js",
+      "./scripts/toc.js"
     ],
     "configurationDefaults": {}
   },

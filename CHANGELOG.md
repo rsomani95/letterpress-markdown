@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0
+
+- Table of contents in preview. Two modes:
+  - **Breadcrumb** (default): a slim sticky bar at the top showing the current heading path (`Section › Subsection › Current`). Appears once you've scrolled past the first heading. The right edge has a `☰ all` button that opens a dropdown of every heading.
+  - **Rail**: a faded vertical list in the right margin. Brightens on hover. Activates only when the window is wide enough (≥1080px) — narrower windows fall back to the breadcrumb.
+- Mode is persisted per browser via `localStorage` and switchable from inside each mode (the dropdown footer in breadcrumb, the rail header link in rail).
+- `/` opens a fuzzy-filterable overlay listing all headings; arrow keys + Enter to jump, Esc to dismiss. Available regardless of mode.
+- Heading text in all three surfaces uses the same typographic hierarchy as the document (H1 in italic serif, H2/H3/H4 in inter with descending weight).
+
 ## 0.3.1
 
 - Color swatches now only trigger for 6-digit hex codes (`#rrggbb`). Previously 3/4/8-digit forms were also matched, but the 3-digit form misfired on common references like `#109` (issue numbers).

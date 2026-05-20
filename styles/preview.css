@@ -359,3 +359,311 @@ em {
 .letterpress-width-slider__reset:hover {
   opacity: 1;
 }
+
+/* ── Table of Contents ──
+ * Two modes — `breadcrumb` (default, sticky bar at top) and `rail` (vertical
+ * margin list, requires wide window). User toggles between them via the
+ * in-UI "switch" button; preference is stored in localStorage.
+ * `/` opens an always-available fuzzy overlay regardless of mode. */
+
+/* ── Shared item styling: typography mirrors the document hierarchy ── */
+
+.letterpress-toc-item {
+  display: block;
+  padding: 0.25em 1em;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 70%, transparent);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.12s ease, color 0.12s ease;
+  border-left: 2px solid transparent;
+}
+.letterpress-toc-item:hover {
+  color: var(--vscode-editor-foreground);
+  background: color-mix(in srgb, var(--vscode-editor-foreground) 6%, transparent);
+}
+.letterpress-toc-item.is-current {
+  color: var(--vscode-textLink-foreground, var(--vscode-editor-foreground));
+  background: color-mix(in srgb, var(--vscode-textLink-foreground, var(--vscode-editor-foreground)) 8%, transparent);
+}
+.letterpress-toc-item.is-active {
+  background: color-mix(in srgb, var(--vscode-textLink-foreground, var(--vscode-editor-foreground)) 12%, transparent);
+  box-shadow: inset 2px 0 var(--vscode-textLink-foreground, var(--vscode-editor-foreground));
+}
+.letterpress-toc-item--h1 {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-style: italic;
+  font-size: 1.15em;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 92%, transparent);
+  padding-left: 1em;
+  margin-top: 0.55em;
+}
+.letterpress-toc-item--h1:first-child { margin-top: 0.3em; }
+.letterpress-toc-item--h2 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 500;
+  padding-left: 1.8em;
+  font-size: 0.95em;
+}
+.letterpress-toc-item--h3 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  padding-left: 2.8em;
+  font-size: 0.9em;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 55%, transparent);
+}
+.letterpress-toc-item--h4 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  padding-left: 3.8em;
+  font-size: 0.85em;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 40%, transparent);
+}
+
+.letterpress-toc-menu-footer {
+  margin-top: 0.4em;
+  padding: 0.5em 1em 0.2em;
+  border-top: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 8%, transparent);
+}
+.letterpress-toc-mode-switch {
+  appearance: none;
+  background: none;
+  border: none;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 55%, transparent);
+  font: inherit;
+  font-size: 0.85em;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+  transition: color 0.12s ease;
+}
+.letterpress-toc-mode-switch:hover {
+  color: var(--vscode-editor-foreground);
+}
+
+/* ── Breadcrumb ── */
+
+.letterpress-toc-crumb {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 12;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6em;
+  background: color-mix(in srgb, var(--vscode-editor-background) 88%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 8%, transparent);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  padding: 0.45em 1rem 0.45em 1.4rem;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 55%, transparent);
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.letterpress-toc-crumb.is-visible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.letterpress-toc-crumb__path {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
+  flex: 1;
+  overflow: hidden;
+  min-width: 0;
+}
+.letterpress-toc-crumb__seg {
+  cursor: pointer;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 55%, transparent);
+  white-space: nowrap;
+  transition: color 0.12s ease;
+}
+.letterpress-toc-crumb__seg:hover {
+  color: var(--vscode-editor-foreground);
+}
+.letterpress-toc-crumb__seg:last-child {
+  color: var(--vscode-textLink-foreground, var(--vscode-editor-foreground));
+  font-style: italic;
+  font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  font-size: 1.25em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.letterpress-toc-crumb__sep { opacity: 0.4; }
+
+.letterpress-toc-crumb__expand {
+  appearance: none;
+  background: color-mix(in srgb, var(--vscode-editor-background) 50%, transparent);
+  border: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 15%, transparent);
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 70%, transparent);
+  font: inherit;
+  padding: 0.25em 0.7em;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.9em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+.letterpress-toc-crumb__expand:hover {
+  color: var(--vscode-editor-foreground);
+  border-color: color-mix(in srgb, var(--vscode-editor-foreground) 25%, transparent);
+  background: color-mix(in srgb, var(--vscode-editor-background) 70%, transparent);
+}
+.letterpress-toc-crumb__expand-icon { font-size: 0.95em; opacity: 0.9; }
+
+.letterpress-toc-crumb__menu {
+  position: absolute;
+  top: 100%;
+  right: 1rem;
+  width: 320px;
+  max-width: calc(100vw - 2rem);
+  max-height: 70vh;
+  overflow-y: auto;
+  background: color-mix(in srgb, var(--vscode-editor-background) 94%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 15%, transparent);
+  border-top: none;
+  padding: 0.5em 0 0;
+  display: none;
+  border-radius: 0 0 8px 8px;
+  scrollbar-width: thin;
+}
+.letterpress-toc-crumb.is-open .letterpress-toc-crumb__menu { display: block; }
+
+/* ── Rail ── */
+
+.letterpress-toc-rail {
+  position: fixed;
+  top: 4rem;
+  bottom: 5rem;
+  right: max(1rem, calc((100vw - var(--letterpress-width, 720px)) / 2 - 220px));
+  width: 200px;
+  overflow-y: auto;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 0.5em 1em;
+  opacity: 0.45;
+  transition: opacity 0.2s ease;
+  z-index: 11;
+  scrollbar-width: thin;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.letterpress-toc-rail:hover,
+.letterpress-toc-rail:focus-within {
+  opacity: 1;
+}
+.letterpress-toc-rail__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+  font-size: 0.85em;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 40%, transparent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding-bottom: 0.5em;
+  margin-bottom: 0.5em;
+  border-bottom: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 8%, transparent);
+}
+/* Rail header's mode-switch overrides the default block layout. */
+.letterpress-toc-rail__head .letterpress-toc-mode-switch {
+  width: auto;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 1em;
+  opacity: 0.6;
+}
+.letterpress-toc-rail__head .letterpress-toc-mode-switch:hover { opacity: 1; }
+
+/* Rail-specific item indents (tighter than the menu version). */
+.letterpress-toc-rail .letterpress-toc-item--h1 {
+  padding-left: 0.6em;
+  margin-top: 0.5em;
+}
+.letterpress-toc-rail .letterpress-toc-item--h2 { padding-left: 1.6em; }
+.letterpress-toc-rail .letterpress-toc-item--h3 { padding-left: 2.4em; }
+.letterpress-toc-rail .letterpress-toc-item--h4 { padding-left: 3.2em; }
+
+.letterpress-toc-rail .letterpress-toc-item.is-current {
+  border-left-color: var(--vscode-textLink-foreground, var(--vscode-editor-foreground));
+}
+
+/* ── Overlay (always available via `/`) ── */
+
+.letterpress-toc-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 18vh;
+  background: color-mix(in srgb, var(--vscode-editor-background) 60%, transparent);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.letterpress-toc-overlay.is-open { display: flex; }
+.letterpress-toc-overlay__panel {
+  width: min(560px, 92vw);
+  max-height: 60vh;
+  background: color-mix(in srgb, var(--vscode-editor-background) 96%, transparent);
+  border: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 25%, transparent);
+  border-radius: 10px;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.letterpress-toc-overlay__input {
+  appearance: none;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--vscode-editor-foreground);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 15px;
+  padding: 0.85em 1.2em;
+  border-bottom: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 8%, transparent);
+}
+.letterpress-toc-overlay__input::placeholder {
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 40%, transparent);
+}
+.letterpress-toc-overlay__list {
+  overflow-y: auto;
+  padding: 0.4em 0 0.6em;
+}
+/* Overlay items get a slightly more prominent H1 to anchor the eye. */
+.letterpress-toc-overlay .letterpress-toc-item--h1 {
+  font-size: 1.3em;
+  padding-left: 1.4em;
+}
+.letterpress-toc-overlay .letterpress-toc-item--h2 {
+  padding-left: 2.4em;
+  font-size: 1em;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 92%, transparent);
+}
+.letterpress-toc-overlay .letterpress-toc-item--h3 {
+  padding-left: 3.4em;
+  font-size: 0.95em;
+}
+.letterpress-toc-overlay .letterpress-toc-item--h4 {
+  padding-left: 4.4em;
+  font-size: 0.9em;
+}

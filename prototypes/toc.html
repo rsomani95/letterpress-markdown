@@ -1,0 +1,1525 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Letterpress · TOC Prototypes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────────────────────────
+   Theme variables (Rocinante dark, matches letterpress preview)
+   ───────────────────────────────────────────────────────────── */
+:root {
+  --bg: #0d1117;
+  --fg: #c0d0e0;
+  --accent: #40c8d8;
+  --accent-bright: #60e0f0;
+  --rhythm: 1.5rem;
+  --letterpress-width: 720px;
+  /* shortcuts to mimic the extension's color-mix() pattern */
+  --fg-92: color-mix(in srgb, var(--fg) 92%, transparent);
+  --fg-85: color-mix(in srgb, var(--fg) 85%, transparent);
+  --fg-70: color-mix(in srgb, var(--fg) 70%, transparent);
+  --fg-55: color-mix(in srgb, var(--fg) 55%, transparent);
+  --fg-40: color-mix(in srgb, var(--fg) 40%, transparent);
+  --fg-25: color-mix(in srgb, var(--fg) 25%, transparent);
+  --fg-15: color-mix(in srgb, var(--fg) 15%, transparent);
+  --fg-08: color-mix(in srgb, var(--fg) 8%, transparent);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  background: var(--bg);
+  color: var(--fg-85);
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Letterpress content (mirrors extension preview.css)
+   ───────────────────────────────────────────────────────────── */
+.letterpress {
+  max-width: var(--letterpress-width, 720px);
+  margin: 0 auto;
+  padding: 4em 1.5em 12em;
+}
+
+.letterpress h1, .letterpress h2, .letterpress h3 {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-style: italic;
+  font-weight: normal;
+  line-height: 1.3;
+  color: color-mix(in srgb, var(--fg) 90%, transparent);
+}
+
+.letterpress h4, .letterpress h5, .letterpress h6 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--fg-70);
+}
+
+.letterpress h1 {
+  font-size: 2.2em;
+  margin-top: calc(var(--rhythm) * 3);
+  margin-bottom: var(--rhythm);
+  padding-bottom: 0.4em;
+  background-image: linear-gradient(to right,
+    transparent,
+    color-mix(in srgb, var(--fg) 12%, transparent) 5%,
+    color-mix(in srgb, var(--fg) 12%, transparent) 95%,
+    transparent);
+  background-size: 100% 1px;
+  background-position: bottom;
+  background-repeat: no-repeat;
+}
+
+.letterpress h1:first-of-type { margin-top: 0; }
+
+.letterpress h2 {
+  font-size: 1.6em;
+  margin-top: calc(var(--rhythm) * 2);
+  margin-bottom: var(--rhythm);
+  padding-bottom: 0.3em;
+  background-image: linear-gradient(to right,
+    transparent,
+    color-mix(in srgb, var(--fg) 10%, transparent) 10%,
+    color-mix(in srgb, var(--fg) 10%, transparent) 90%,
+    transparent);
+  background-size: 100% 1px;
+  background-position: bottom;
+  background-repeat: no-repeat;
+}
+
+.letterpress h3 {
+  font-size: 1.3em;
+  margin-top: calc(var(--rhythm) * 1.5);
+  margin-bottom: calc(var(--rhythm) * 0.5);
+  color: var(--fg-85);
+}
+
+.letterpress p {
+  margin: 0 0 var(--rhythm);
+}
+
+.letterpress em { font-style: italic; }
+.letterpress strong { font-weight: 600; color: var(--fg-92); }
+
+.letterpress code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9em;
+  color: color-mix(in srgb, var(--fg) 80%, transparent);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Common: smooth scroll, scroll-margin so jumped headings
+   aren't hidden under sticky breadcrumb.
+   ───────────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+.letterpress :where(h1, h2, h3) { scroll-margin-top: 4.5rem; }
+
+/* ─────────────────────────────────────────────────────────────
+   Labs control panel (clearly "tool UI" — distinct from TOC)
+   ───────────────────────────────────────────────────────────── */
+.labs {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.55em 0.9em;
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--fg-15);
+  border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--fg-55);
+  user-select: none;
+  -webkit-user-select: none;
+  white-space: nowrap;
+  max-width: calc(100vw - 2rem);
+  overflow-x: auto;
+}
+
+.labs__group { display: flex; align-items: center; gap: 0.3em; }
+.labs__sep {
+  width: 1px;
+  height: 1em;
+  background: var(--fg-15);
+  margin: 0 0.4em;
+}
+.labs__label {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75em;
+  opacity: 0.6;
+  margin-right: 0.2em;
+}
+.labs__btn {
+  appearance: none;
+  background: none;
+  border: 1px solid transparent;
+  color: var(--fg-55);
+  font: inherit;
+  padding: 0.2em 0.55em;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.labs__btn:hover { color: var(--fg-92); border-color: var(--fg-25); }
+.labs__btn.is-on {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+.labs__select {
+  appearance: none;
+  background: none;
+  border: 1px solid var(--fg-15);
+  color: var(--fg-70);
+  font: inherit;
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.labs__hint {
+  font-size: 0.9em;
+  color: var(--fg-40);
+}
+.labs__hint kbd {
+  font-family: inherit;
+  background: var(--fg-15);
+  color: var(--fg-85);
+  padding: 0 0.35em;
+  border-radius: 3px;
+  font-size: 0.95em;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Mode 1: Margin Rail
+   ───────────────────────────────────────────────────────────── */
+.rail {
+  position: fixed;
+  top: 4rem;
+  bottom: 8rem;
+  width: 200px;
+  overflow-y: auto;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 0.5em 1em;
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+  z-index: 50;
+  display: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--fg-15) transparent;
+}
+.rail.is-on { display: block; }
+.rail:hover { opacity: 1; }
+.rail.is-side-left { left: max(1rem, calc((100vw - var(--letterpress-width)) / 2 - 220px)); }
+.rail.is-side-right { right: max(1rem, calc((100vw - var(--letterpress-width)) / 2 - 220px)); }
+
+.rail__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85em;
+  color: var(--fg-40);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding-bottom: 0.5em;
+  margin-bottom: 0.5em;
+  border-bottom: 1px solid var(--fg-08);
+}
+.rail__close {
+  appearance: none;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0 0.3em;
+  opacity: 0.7;
+}
+.rail__close:hover { opacity: 1; }
+
+.rail__list { list-style: none; margin: 0; padding: 0; }
+.rail__item {
+  display: block;
+  padding: 0.15em 0;
+  color: var(--fg-55);
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  padding-left: 0.6em;
+  margin-left: -0.6em;
+  transition: color 0.12s, border-color 0.12s;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rail__item:hover { color: var(--fg-92); }
+.rail__item.is-current {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  font-weight: 500;
+}
+.rail__item--h1 { padding-left: 0.6em; }
+.rail__item--h2 { padding-left: 1.6em; font-size: 0.95em; }
+.rail__item--h3 { padding-left: 2.4em; font-size: 0.9em; color: var(--fg-40); }
+.rail__item--h4 { padding-left: 3.2em; font-size: 0.85em; color: var(--fg-25); }
+
+.rail--collapsed {
+  width: auto;
+  padding: 0.5em 0.7em;
+  cursor: pointer;
+}
+.rail--collapsed .rail__list,
+.rail--collapsed .rail__close { display: none; }
+.rail--collapsed .rail__head {
+  border: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.8em;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Mode 2: Corner Pill
+   ───────────────────────────────────────────────────────────── */
+.pill {
+  position: fixed;
+  top: 1.2rem;
+  right: 1.2rem;
+  z-index: 60;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  display: none;
+  transition: top 0.15s ease;
+}
+.pill.is-on { display: block; }
+/* push pill below breadcrumb if both are visible at once */
+body:has(.crumb.is-on) .pill { top: calc(2.4em + 1rem); }
+
+.pill__toggle {
+  appearance: none;
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--fg-15);
+  color: var(--fg-70);
+  font: inherit;
+  padding: 0.4em 0.9em;
+  border-radius: 999px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  max-width: 260px;
+  transition: all 0.15s ease;
+}
+.pill__toggle:hover { color: var(--fg-92); border-color: var(--fg-25); }
+.pill__toggle-icon {
+  font-size: 0.9em;
+  opacity: 0.7;
+}
+.pill__toggle-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-style: italic;
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 1.1em;
+}
+
+.pill__menu {
+  position: absolute;
+  top: calc(100% + 0.4em);
+  right: 0;
+  width: 260px;
+  max-height: 60vh;
+  overflow-y: auto;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--fg-15);
+  border-radius: 8px;
+  padding: 0.5em 0;
+  display: none;
+  scrollbar-width: thin;
+}
+.pill.is-open .pill__menu { display: block; }
+.pill__item {
+  display: block;
+  padding: 0.25em 1em;
+  color: var(--fg-70);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.1s, color 0.1s;
+}
+.pill__item:hover { background: var(--fg-08); color: var(--fg-92); }
+.pill__item.is-current {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+/* Typography mirrors the document hierarchy.
+   H1 = italic serif, others = inter with descending weight & opacity. */
+.pill__item--h1 {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-style: italic;
+  font-size: 1.15em;
+  color: var(--fg-92);
+  padding-left: 1em;
+  margin-top: 0.55em;
+}
+.pill__menu > .pill__item--h1:first-child { margin-top: 0.3em; }
+.pill__item--h2 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  padding-left: 1.8em;
+  font-size: 0.95em;
+}
+.pill__item--h3 {
+  font-family: 'Inter', sans-serif;
+  padding-left: 2.8em;
+  font-size: 0.9em;
+  color: var(--fg-55);
+}
+.pill__item--h4 {
+  font-family: 'Inter', sans-serif;
+  padding-left: 3.8em;
+  font-size: 0.85em;
+  color: var(--fg-40);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Mode 3: Progress Spine
+   ───────────────────────────────────────────────────────────── */
+.spine {
+  position: fixed;
+  top: 4rem;
+  bottom: 4rem;
+  width: 24px;
+  z-index: 50;
+  display: none;
+}
+.spine.is-on { display: block; }
+.spine.is-side-left { left: 0.5rem; }
+.spine.is-side-right { right: 0.5rem; }
+
+.spine__track {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--fg-08);
+}
+.spine__progress {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0;
+  width: 1px;
+  background: var(--accent);
+  opacity: 0.55;
+  transition: height 0.05s linear;
+}
+
+.spine__tick {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 1px;
+  background: var(--fg-25);
+  cursor: pointer;
+  transition: background 0.12s, width 0.12s;
+}
+.spine__tick--h1 { width: 18px; }
+.spine__tick--h2 { width: 12px; }
+.spine__tick--h3 { width: 8px; }
+.spine__tick--h4 { width: 5px; }
+.spine__tick:hover {
+  background: var(--accent-bright);
+  width: 22px;
+}
+.spine__tick.is-current { background: var(--accent); }
+.spine__tick.is-passed { background: var(--fg-40); }
+
+.spine__label {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: var(--fg-92);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid var(--fg-15);
+  padding: 0.2em 0.6em;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s;
+}
+.spine.is-side-left .spine__label { left: calc(100% + 0.5em); }
+.spine.is-side-right .spine__label { right: calc(100% + 0.5em); }
+.spine__tick:hover .spine__label { opacity: 1; }
+
+/* ─────────────────────────────────────────────────────────────
+   Mode 4: Sticky Breadcrumb
+   ───────────────────────────────────────────────────────────── */
+.crumb {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 55;
+  display: none;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--fg-08);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  padding: 0.45em 1rem 0.45em 1.4rem;
+  color: var(--fg-55);
+}
+.crumb.is-on { display: flex; align-items: center; gap: 0.6em; }
+.crumb__path {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
+  flex: 1;
+  overflow: hidden;
+  min-width: 0;
+}
+.crumb__seg {
+  cursor: pointer;
+  color: var(--fg-55);
+  white-space: nowrap;
+  transition: color 0.12s;
+}
+.crumb__seg:hover { color: var(--fg-92); }
+.crumb__seg:last-child {
+  color: var(--accent);
+  font-style: italic;
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 1.25em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.crumb__sep { opacity: 0.4; }
+.crumb__expand {
+  appearance: none;
+  background: color-mix(in srgb, var(--bg) 50%, transparent);
+  border: 1px solid var(--fg-15);
+  color: var(--fg-70);
+  font: inherit;
+  padding: 0.25em 0.7em;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.crumb__expand:hover {
+  color: var(--fg-92);
+  border-color: var(--fg-25);
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+}
+.crumb__expand-icon { font-size: 0.95em; opacity: 0.9; }
+.crumb__menu {
+  position: absolute;
+  top: 100%;
+  right: 1rem;
+  width: 300px;
+  max-height: 70vh;
+  overflow-y: auto;
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--fg-15);
+  border-top: none;
+  padding: 0.5em 0 0.8em;
+  display: none;
+  scrollbar-width: thin;
+  border-radius: 0 0 8px 8px;
+}
+.crumb.is-open .crumb__menu { display: block; }
+.crumb__item {
+  display: block;
+  padding: 0.25em 1em;
+  color: var(--fg-70);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.1s, color 0.1s;
+}
+.crumb__item:hover { background: var(--fg-08); color: var(--fg-92); }
+.crumb__item.is-current {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+.crumb__item--h1 {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-style: italic;
+  font-size: 1.15em;
+  color: var(--fg-92);
+  padding-left: 1em;
+  margin-top: 0.55em;
+}
+.crumb__menu > .crumb__item--h1:first-child { margin-top: 0.3em; }
+.crumb__item--h2 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  padding-left: 1.8em;
+  font-size: 0.95em;
+}
+.crumb__item--h3 {
+  font-family: 'Inter', sans-serif;
+  padding-left: 2.8em;
+  font-size: 0.9em;
+  color: var(--fg-55);
+}
+.crumb__item--h4 {
+  font-family: 'Inter', sans-serif;
+  padding-left: 3.8em;
+  font-size: 0.85em;
+  color: var(--fg-40);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Mode 5: Summon Overlay (always-available via hotkey)
+   ───────────────────────────────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 18vh;
+  background: color-mix(in srgb, var(--bg) 60%, transparent);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.overlay.is-open { display: flex; }
+
+.overlay__panel {
+  width: min(560px, 92vw);
+  max-height: 60vh;
+  background: color-mix(in srgb, var(--bg) 96%, transparent);
+  border: 1px solid var(--fg-25);
+  border-radius: 10px;
+  box-shadow: 0 30px 80px -20px color-mix(in srgb, #000 70%, transparent);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.overlay__input {
+  appearance: none;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--fg-92);
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  padding: 1em 1.2em;
+  border-bottom: 1px solid var(--fg-08);
+}
+.overlay__input::placeholder { color: var(--fg-40); }
+.overlay__list {
+  overflow-y: auto;
+  padding: 0.4em 0;
+}
+.overlay__item {
+  display: block;
+  padding: 0.35em 1.4em;
+  cursor: pointer;
+  color: var(--fg-70);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.08s;
+}
+.overlay__item:hover,
+.overlay__item.is-active {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.overlay__item.is-active { box-shadow: inset 2px 0 var(--accent); }
+.overlay__item--h1 {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-style: italic;
+  font-size: 1.3em;
+  color: var(--fg-92);
+  padding-left: 1.4em;
+  margin-top: 0.4em;
+}
+.overlay__list > .overlay__item--h1:first-child { margin-top: 0.1em; }
+.overlay__item--h2 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  padding-left: 2.4em;
+  font-size: 1em;
+  color: var(--fg-92);
+}
+.overlay__item--h3 {
+  font-family: 'Inter', sans-serif;
+  padding-left: 3.4em;
+  font-size: 0.95em;
+  color: var(--fg-70);
+}
+.overlay__item--h4 {
+  font-family: 'Inter', sans-serif;
+  padding-left: 4.4em;
+  font-size: 0.9em;
+  color: var(--fg-55);
+}
+
+.overlay-hint {
+  position: fixed;
+  top: 1.2rem;
+  left: 1.2rem;
+  z-index: 40;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--fg-40);
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+.overlay-hint:hover { opacity: 1; }
+.overlay-hint kbd {
+  background: var(--fg-15);
+  color: var(--fg-85);
+  padding: 0.05em 0.4em;
+  border-radius: 3px;
+  font-family: inherit;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Mode 6: Edge Peek
+   ───────────────────────────────────────────────────────────── */
+.peek {
+  position: fixed;
+  top: 4rem;
+  bottom: 4rem;
+  width: 240px;
+  z-index: 50;
+  display: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  transition: transform 0.25s ease;
+  background: color-mix(in srgb, var(--bg) 95%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 1em 1em 1em 1.4em;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.peek.is-on { display: block; }
+.peek.is-side-left {
+  left: 0;
+  transform: translateX(calc(-100% + 6px));
+  border-right: 1px solid var(--fg-15);
+}
+.peek.is-side-right {
+  right: 0;
+  transform: translateX(calc(100% - 6px));
+  border-left: 1px solid var(--fg-15);
+}
+.peek.is-peeking { transform: translateX(0); }
+
+.peek__tab {
+  position: absolute;
+  top: 50%;
+  width: 4px;
+  height: 60px;
+  background: var(--accent);
+  opacity: 0.5;
+  border-radius: 2px;
+  transform: translateY(-50%);
+  transition: opacity 0.15s;
+}
+.peek.is-side-left .peek__tab { right: 1px; }
+.peek.is-side-right .peek__tab { left: 1px; }
+.peek:hover .peek__tab { opacity: 1; }
+
+.peek__head {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85em;
+  color: var(--fg-40);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.8em;
+}
+.peek__item {
+  display: block;
+  padding: 0.2em 0;
+  color: var(--fg-70);
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  padding-left: 0.6em;
+  margin-left: -0.6em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.peek__item:hover { color: var(--fg-92); }
+.peek__item.is-current {
+  color: var(--accent);
+  border-left-color: var(--accent);
+}
+.peek__item--h1 { padding-left: 0.6em; }
+.peek__item--h2 { padding-left: 1.6em; font-size: 0.95em; }
+.peek__item--h3 { padding-left: 2.4em; font-size: 0.9em; }
+.peek__item--h4 { padding-left: 3.2em; font-size: 0.85em; color: var(--fg-40); }
+
+</style>
+</head>
+<body>
+
+<!-- ──────────────────────────────────────────────────────────
+     The content
+     ────────────────────────────────────────────────────────── -->
+<article id="content" class="letterpress">
+
+<h1>Designing a Navigable Table of Contents</h1>
+
+<p>Long-form reading in a markdown preview deserves to feel like reading a book — pages turning, sections clearly marked, easy passage between chapters. This document is a working prototype: pick a TOC mode from the controls at the bottom of the screen and see how each one affects the reading experience.</p>
+
+<p>The six approaches below sit on a spectrum from <em>continuously present and informative</em> to <em>invisible until summoned</em>. None is universally correct; the right choice depends on document length, your relationship to the document, and how much UI you can tolerate alongside prose.</p>
+
+<h2>Why a TOC at all?</h2>
+
+<p>A table of contents serves three distinct purposes in editorial UI. Most designs collapse one or two of these into the third and call it done. The best designs treat them as separable concerns and address each explicitly.</p>
+
+<h3>For the reader who is orienting</h3>
+
+<p>Long documents are a contract. The reader doesn't know yet whether the time investment will pay off, and a glance at the structure helps them decide. A good TOC for orientation is dense, hierarchical, and visible without interaction. The reader scans, decides, and either commits or closes the tab.</p>
+
+<h3>For the reader who is reading</h3>
+
+<p>Mid-document, the reader's relationship to the TOC changes. They are no longer surveying — they are flowing. The TOC's job now is to be available without being intrusive. They might glance at it to remember where they are, jump back to a definition, or skip ahead. The best designs here either fade the TOC visually or move it out of the way entirely.</p>
+
+<h3>For the reader who is searching</h3>
+
+<p>Sometimes the reader knows the document and wants a specific section, immediately. They don't want to scan; they want to type a few characters and arrive. This is a fundamentally different interaction — keyboard-driven, filter-based, modal. It pairs naturally with any of the other modes as a complement rather than a replacement.</p>
+
+<h2>Design Constraints</h2>
+
+<p>The letterpress aesthetic places real constraints on what the TOC can be. This isn't ornament — it's the whole point of the extension. A TOC that violates the aesthetic is worse than no TOC at all.</p>
+
+<h3>Calm legibility</h3>
+
+<p>The extension's stated goal is "calm legibility." Anything that competes with the prose for attention is a failure. Bright colors, hard borders, dense UI chrome — all are out. The TOC must feel like part of the same designed object as the text, not a tool dropped onto the page.</p>
+
+<h3>Reading column protected</h3>
+
+<p>The centered 720px column is sacred. Whatever the TOC does, it cannot encroach on that column or push it off-center. This rules out a left sidebar that displaces the content. The TOC must live in the margins, overlay the page, or stay completely off-screen until summoned.</p>
+
+<h3>Technical surface</h3>
+
+<p>The preview is a VS Code webview. The extension already injects three scripts (<code>fold.js</code>, <code>width-slider.js</code>, <code>color-swatches.js</code>) into that webview via <code>markdown.previewScripts</code>. Adding a fourth — <code>toc.js</code> — is a small, well-understood change. State can be persisted to <code>localStorage</code> the same way the width slider already does.</p>
+
+<h1>Six Approaches</h1>
+
+<p>Each of the six approaches below is a complete <em>personality</em> for the TOC. They are not mutually exclusive — several could ship together as configurable modes. But each has a clear identity worth understanding on its own.</p>
+
+<h2>Margin Rail</h2>
+
+<p>The most editorial of the options. A vertical list of headings sits in the left (or right) margin, outside the prose column. By default it is faded to ~40% opacity; hovering brings it to full brightness. Indentation encodes hierarchy. A small "×" closes the rail entirely; a collapsed pill remains for restoration.</p>
+
+<h3>When it shines</h3>
+
+<p>The Rail is the only approach that simultaneously offers <em>overview</em>, <em>jumps</em>, and <em>reading-position awareness</em> in one persistent surface. For long-form reading on a wide monitor, it's hard to beat — the margins are otherwise empty, and the eye learns to glance at the rail without breaking flow.</p>
+
+<h3>Where it struggles</h3>
+
+<p>The Rail needs margin space. On narrow windows or with a maximally wide preview column, there's nowhere for it to go. A reasonable fallback is to auto-collapse the Rail below a width threshold and fall back to a summon overlay. Long heading text also needs truncation, which can frustrate readers who can't see the full heading.</p>
+
+<h2>Corner Pill</h2>
+
+<p>A small unobtrusive pill in the top-right corner shows the current section name in italic serif. Clicking it expands a vertical menu of all headings; clicking outside or on a heading collapses it again. The default state takes very little screen space.</p>
+
+<h3>When it shines</h3>
+
+<p>The Pill works at any window width. Its default state is small enough to ignore yet always visible. It's a familiar pattern — Substack and Notion use variants of it — so users don't have to learn anything new. For orientation, one click reveals the full structure.</p>
+
+<h3>Where it struggles</h3>
+
+<p>The Pill requires interaction for every glance. It's worse than the Rail for orientation (you have to click to see the structure) and worse for jumps (two interactions instead of one). When the menu is open, it overlaps the prose, which feels heavier than a true margin layout.</p>
+
+<h2>Progress Spine</h2>
+
+<p>A thin vertical line on the right edge of the viewport. Each heading is a tick on the line, with tick length encoding heading depth — H1 ticks are longest, H4 shortest. Hovering a tick reveals the heading text in a tooltip. The portion of the spine above the current scroll position is filled, doubling as a reading-progress indicator.</p>
+
+<h3>When it shines</h3>
+
+<p>The Spine is the most aesthetically minimal of all the options. It feels less like a TOC and more like a typographic gesture. The reading-progress aspect is genuinely useful for long-form reading and matches the "where am I" question well. Hover-and-jump becomes a natural micro-interaction.</p>
+
+<h3>Where it struggles</h3>
+
+<p>The Spine fails the orientation use case. You cannot scan headings without hovering each tick one at a time, which is tedious for docs with twenty or more sections. For a document you've never read before, the Spine tells you almost nothing about its structure. It's a beautiful tool for documents you already know.</p>
+
+<h2>Sticky Breadcrumb</h2>
+
+<p>A thin sticky banner at the top of the preview shows the reader's current position as a path: "Approach Survey › Margin Rail." Clicking the banner expands a full TOC dropdown below it. The breadcrumb updates as the reader scrolls.</p>
+
+<h3>When it shines</h3>
+
+<p>The Breadcrumb solves "where am I" continuously and unambiguously. It's honest about hierarchy in a way that the Spine isn't. The expand-on-click model is familiar from VS Code's own file-path breadcrumb and from GitHub's code views, so users grok it instantly.</p>
+
+<h3>Where it struggles</h3>
+
+<p>The Breadcrumb takes vertical space at the top of the viewport at all times. For a typography-first design, that's a real cost — the prose has less room to breathe. The interaction also feels more "app" than "page," which is a tonal mismatch with the letterpress aesthetic.</p>
+
+<h2>Summoned Overlay</h2>
+
+<p>The default state is invisible — no UI in the page at all. A keyboard shortcut (or a small "⌘K" hint in a corner) summons a centered modal with a fuzzy-filterable list of all headings. Type, arrow, enter. Esc dismisses.</p>
+
+<h3>When it shines</h3>
+
+<p>The Overlay is maximally calm at rest. For keyboard-driven users, it's the fastest possible navigation: a few keystrokes from any scroll position to any heading. It scales to documents with hundreds of headings (the filter keeps it manageable). It's the most likely mode to coexist with another — almost every other approach benefits from having the Overlay available too.</p>
+
+<h3>Where it struggles</h3>
+
+<p>The Overlay has zero passive value. It tells you nothing about the document until you ask. For orientation in an unfamiliar doc, it's the worst option — you have to open the modal, look, and dismiss before you can read anything. Discoverability is also a problem unless the hotkey hint is visible somewhere.</p>
+
+<h2>Edge Peek</h2>
+
+<p>The TOC is fully off-screen by default. A thin tab at the left edge of the viewport reminds the reader it's there. Moving the mouse near that edge — or onto the tab — slides the full TOC in from the left. Moving the mouse away slides it back out.</p>
+
+<h3>When it shines</h3>
+
+<p>The Peek combines the Rail's information density with the Overlay's clean-by-default aesthetic. Discovery is solved by the visible tab. The reader doesn't have to remember a shortcut or move their hand to the keyboard. It feels playful and physical, like a hidden drawer.</p>
+
+<h3>Where it struggles</h3>
+
+<p>The Peek is mouse-dependent — there's no good keyboard equivalent without bolting one on. The auto-show, auto-hide behavior can feel jittery if not tuned carefully. And the edge-trigger area can conflict with VS Code's own edge gestures or with macOS hot corners.</p>
+
+<h1>Cross-Cutting Concerns</h1>
+
+<p>Beyond the choice of personality, there are several decisions that apply to almost any TOC. They're worth making deliberately rather than by accident.</p>
+
+<h2>Reading-position indication</h2>
+
+<p>Most of the approaches above support some form of "you are here" highlight — the Rail bolds the current heading, the Spine fills its progress bar, the Breadcrumb shows the path explicitly. This costs almost nothing technically (an <code>IntersectionObserver</code> on all headings) and pays off significantly for long-form reading. Default it on.</p>
+
+<h2>Heading depth caps</h2>
+
+<p>Markdown supports six heading levels. Most well-structured documents top out at three or four. Showing all six in the TOC makes the rail-style modes noisy and overwhelms the eye. A configurable depth cap — defaulting to H1-H3 — keeps the TOC scannable without losing important structure.</p>
+
+<h2>Keyboard support</h2>
+
+<p>Even visual modes deserve keyboard equivalents. The Overlay is the obvious one — bind it to a hotkey and it's always one keypress away. For the Rail and Peek, arrow-key navigation through headings is nice-to-have but not essential. For the Pill and Breadcrumb, the menu should be openable via the shortcut even when collapsed.</p>
+
+<h2>Per-document persistence</h2>
+
+<p>The width slider already remembers the chosen width per document. The TOC mode and collapsed state should follow the same pattern. If the reader collapses the Rail on one document, they probably want it collapsed on the next one too — but if they explicitly hid it on a single short doc, the next long doc should restore the default.</p>
+
+<h1>Suggested Default</h1>
+
+<p>If you have to pick one personality as the default, I'd pick the Margin Rail with an always-available Summon Overlay (bound to a single hotkey, hint visible in a corner). The Rail handles orientation and quick visual jumps; the Overlay handles deep keyboard navigation. Both can be disabled per-document. Both fit the letterpress aesthetic.</p>
+
+<p>Other modes ship as configurable alternatives via <code>letterpress.toc.mode</code>. Switching is a CSS+JS swap, not a rewrite, because all modes read from the same shared headings model and current-section tracker.</p>
+
+<p>Toggle around the options at the bottom of the page and see what feels right. Combine multiple if you want to see how they coexist. The Overlay is always one <kbd>/</kbd> away.</p>
+
+</article>
+
+<!-- ──────────────────────────────────────────────────────────
+     TOC elements (rendered by JS, shown/hidden by mode toggles)
+     ────────────────────────────────────────────────────────── -->
+
+<aside class="rail is-side-left" id="rail">
+  <div class="rail__head">
+    <span>Contents</span>
+    <button class="rail__close" id="rail-close" title="Hide rail">×</button>
+  </div>
+  <ul class="rail__list" id="rail-list"></ul>
+</aside>
+
+<div class="pill" id="pill">
+  <button class="pill__toggle" id="pill-toggle">
+    <span class="pill__toggle-icon">☰</span>
+    <span class="pill__toggle-text" id="pill-current">—</span>
+  </button>
+  <div class="pill__menu" id="pill-menu"></div>
+</div>
+
+<div class="spine is-side-right" id="spine">
+  <div class="spine__track"></div>
+  <div class="spine__progress" id="spine-progress"></div>
+  <div id="spine-ticks"></div>
+</div>
+
+<div class="crumb" id="crumb">
+  <div class="crumb__path" id="crumb-path"></div>
+  <button class="crumb__expand" id="crumb-expand" title="Show all headings">
+    <span class="crumb__expand-icon">☰</span>
+    <span class="crumb__expand-label">all</span>
+  </button>
+  <div class="crumb__menu" id="crumb-menu"></div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="overlay__panel">
+    <input class="overlay__input" id="overlay-input" type="text" placeholder="Jump to heading…" autocomplete="off">
+    <div class="overlay__list" id="overlay-list"></div>
+  </div>
+</div>
+
+<div class="overlay-hint" id="overlay-hint">
+  <kbd>/</kbd> jump to heading
+</div>
+
+<aside class="peek is-side-left" id="peek">
+  <div class="peek__tab"></div>
+  <div class="peek__head">Contents</div>
+  <div id="peek-list"></div>
+</aside>
+
+<!-- ──────────────────────────────────────────────────────────
+     Labs control panel
+     ────────────────────────────────────────────────────────── -->
+
+<div class="labs">
+  <div class="labs__group">
+    <span class="labs__label">mode</span>
+    <button class="labs__btn is-on" data-mode="rail">rail</button>
+    <button class="labs__btn" data-mode="crumb">combo</button>
+    <button class="labs__btn" data-mode="pill">pill alone</button>
+    <button class="labs__btn" data-mode="spine">spine</button>
+    <button class="labs__btn" data-mode="peek">peek</button>
+  </div>
+  <div class="labs__sep"></div>
+  <div class="labs__group">
+    <span class="labs__label">side</span>
+    <select class="labs__select" id="side-select">
+      <option value="left">left</option>
+      <option value="right" selected>right</option>
+    </select>
+  </div>
+  <div class="labs__group">
+    <span class="labs__label">depth</span>
+    <select class="labs__select" id="depth-select">
+      <option value="2">2</option>
+      <option value="3" selected>3</option>
+      <option value="4">4</option>
+    </select>
+  </div>
+  <div class="labs__sep"></div>
+  <span class="labs__hint">overlay: <kbd>/</kbd> · esc to close</span>
+</div>
+
+<script>
+'use strict';
+
+(function () {
+
+  // ─── State ────────────────────────────────────────────────────
+  const state = {
+    modes: new Set(['rail']),
+    side: 'right',         // 'left' | 'right' — rail/peek/spine flip together by default
+    maxDepth: 3,
+    current: null,
+  };
+
+  // ─── Helpers ──────────────────────────────────────────────────
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  function slugify(text) {
+    return text.toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  // ─── Headings model ───────────────────────────────────────────
+  const headings = $$('#content :where(h1, h2, h3, h4)').map((el, i) => {
+    const level = parseInt(el.tagName[1], 10);
+    if (!el.id) el.id = 'h-' + i + '-' + slugify(el.textContent);
+    return {
+      el,
+      level,
+      text: el.textContent,
+      id: el.id,
+      offsetTop: 0,    // recalculated on render
+    };
+  });
+
+  function recomputeOffsets() {
+    headings.forEach(h => {
+      h.offsetTop = h.el.offsetTop;
+    });
+  }
+
+  function visibleHeadings() {
+    return headings.filter(h => h.level <= state.maxDepth);
+  }
+
+  // Build a path of the form [H1, H2, H3] for the current heading
+  function pathFor(idx) {
+    if (idx == null || idx < 0) return [];
+    const cur = headings[idx];
+    const path = [cur];
+    for (let i = idx - 1; i >= 0; i--) {
+      if (headings[i].level < path[path.length - 1].level) {
+        path.push(headings[i]);
+      }
+      if (headings[i].level === 1) break;
+    }
+    return path.reverse();
+  }
+
+  // ─── Current section tracker ──────────────────────────────────
+  function updateCurrent() {
+    const scrollTop = window.scrollY;
+    const threshold = scrollTop + 80;       // account for sticky breadcrumb
+    let currentIdx = -1;
+    for (let i = 0; i < headings.length; i++) {
+      if (headings[i].offsetTop <= threshold) currentIdx = i;
+      else break;
+    }
+    if (currentIdx !== state.current) {
+      state.current = currentIdx;
+      renderCurrent();
+    }
+    renderSpineProgress();
+  }
+
+  // ─── Renderers ────────────────────────────────────────────────
+
+  // Rail
+  function renderRail() {
+    const list = $('#rail-list');
+    list.innerHTML = '';
+    visibleHeadings().forEach((h, i) => {
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.className = 'rail__item rail__item--h' + h.level;
+      a.textContent = h.text;
+      a.dataset.idx = headings.indexOf(h);
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        jumpTo(h.id);
+      });
+      list.appendChild(a);
+    });
+  }
+
+  // Pill
+  function renderPill() {
+    const menu = $('#pill-menu');
+    menu.innerHTML = '';
+    visibleHeadings().forEach((h, i) => {
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.className = 'pill__item pill__item--h' + h.level;
+      a.textContent = h.text;
+      a.dataset.idx = headings.indexOf(h);
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        jumpTo(h.id);
+        $('#pill').classList.remove('is-open');
+      });
+      menu.appendChild(a);
+    });
+  }
+
+  // Spine
+  function renderSpine() {
+    const ticks = $('#spine-ticks');
+    ticks.innerHTML = '';
+    const totalH = document.documentElement.scrollHeight - window.innerHeight;
+    const trackEl = $('#spine');
+    const trackH = trackEl.getBoundingClientRect().height;
+    visibleHeadings().forEach((h) => {
+      const t = document.createElement('div');
+      t.className = 'spine__tick spine__tick--h' + h.level;
+      const pct = totalH > 0 ? (h.offsetTop / (totalH + window.innerHeight)) : 0;
+      t.style.top = (pct * trackH) + 'px';
+      t.dataset.idx = headings.indexOf(h);
+      const label = document.createElement('span');
+      label.className = 'spine__label';
+      label.textContent = h.text;
+      t.appendChild(label);
+      t.addEventListener('click', () => jumpTo(h.id));
+      ticks.appendChild(t);
+    });
+  }
+
+  function renderSpineProgress() {
+    const el = $('#spine-progress');
+    if (!el) return;
+    const totalH = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = totalH > 0 ? (window.scrollY / totalH) : 0;
+    const trackH = $('#spine').getBoundingClientRect().height;
+    el.style.height = (pct * trackH) + 'px';
+  }
+
+  // Breadcrumb
+  function renderCrumb() {
+    const menu = $('#crumb-menu');
+    menu.innerHTML = '';
+    visibleHeadings().forEach((h) => {
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.className = 'crumb__item crumb__item--h' + h.level;
+      a.textContent = h.text;
+      a.dataset.idx = headings.indexOf(h);
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        jumpTo(h.id);
+        $('#crumb').classList.remove('is-open');
+      });
+      menu.appendChild(a);
+    });
+  }
+
+  // Peek
+  function renderPeek() {
+    const list = $('#peek-list');
+    list.innerHTML = '';
+    visibleHeadings().forEach((h) => {
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.className = 'peek__item peek__item--h' + h.level;
+      a.textContent = h.text;
+      a.dataset.idx = headings.indexOf(h);
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        jumpTo(h.id);
+      });
+      list.appendChild(a);
+    });
+  }
+
+  // Overlay
+  let overlayItems = [];
+  let overlayActive = 0;
+
+  function renderOverlay(filter) {
+    const list = $('#overlay-list');
+    list.innerHTML = '';
+    const q = (filter || '').toLowerCase();
+    overlayItems = headings.filter(h => {
+      if (h.level > state.maxDepth + 1) return false;   // overlay is a bit more permissive
+      return !q || h.text.toLowerCase().includes(q);
+    });
+    overlayItems.forEach((h, i) => {
+      const row = document.createElement('div');
+      row.className = 'overlay__item overlay__item--h' + h.level +
+        (i === overlayActive ? ' is-active' : '');
+      row.dataset.idx = headings.indexOf(h);
+      row.textContent = h.text;
+      row.addEventListener('click', () => {
+        jumpTo(h.id);
+        closeOverlay();
+      });
+      list.appendChild(row);
+    });
+  }
+
+  // ─── Highlight current section across all visible modes ───────
+  function renderCurrent() {
+    const idx = state.current;
+    // rail
+    $$('#rail-list .rail__item').forEach(el => {
+      el.classList.toggle('is-current', +el.dataset.idx === idx);
+    });
+    // pill: text + menu highlight
+    $$('#pill-menu .pill__item').forEach(el => {
+      el.classList.toggle('is-current', +el.dataset.idx === idx);
+    });
+    $('#pill-current').textContent = idx >= 0 ? headings[idx].text : '—';
+    // spine ticks (current + passed)
+    $$('#spine-ticks .spine__tick').forEach(el => {
+      const i = +el.dataset.idx;
+      el.classList.toggle('is-current', i === idx);
+      el.classList.toggle('is-passed', i < idx);
+    });
+    // crumb path — truncate to last 3 segments with "…" prefix if deeper
+    const path = pathFor(idx);
+    const pathEl = $('#crumb-path');
+    pathEl.innerHTML = '';
+    if (path.length === 0) {
+      const s = document.createElement('span');
+      s.className = 'crumb__seg';
+      s.textContent = 'Top';
+      pathEl.appendChild(s);
+    } else {
+      const MAX_SEGS = 3;
+      const truncated = path.length > MAX_SEGS;
+      const displayed = truncated ? path.slice(-MAX_SEGS) : path;
+      if (truncated) {
+        const ell = document.createElement('span');
+        ell.className = 'crumb__seg';
+        ell.textContent = '…';
+        ell.title = path.slice(0, -MAX_SEGS).map(h => h.text).join(' › ');
+        ell.addEventListener('click', () => jumpTo(path[0].id));
+        pathEl.appendChild(ell);
+        const sep = document.createElement('span');
+        sep.className = 'crumb__sep';
+        sep.textContent = '›';
+        pathEl.appendChild(sep);
+      }
+      displayed.forEach((h, i) => {
+        if (i > 0) {
+          const sep = document.createElement('span');
+          sep.className = 'crumb__sep';
+          sep.textContent = '›';
+          pathEl.appendChild(sep);
+        }
+        const seg = document.createElement('span');
+        seg.className = 'crumb__seg';
+        seg.textContent = h.text;
+        seg.addEventListener('click', () => jumpTo(h.id));
+        pathEl.appendChild(seg);
+      });
+    }
+    $$('#crumb-menu .crumb__item').forEach(el => {
+      el.classList.toggle('is-current', +el.dataset.idx === idx);
+    });
+    // peek
+    $$('#peek-list .peek__item').forEach(el => {
+      el.classList.toggle('is-current', +el.dataset.idx === idx);
+    });
+  }
+
+  // ─── Jump ────────────────────────────────────────────────────
+  function jumpTo(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ─── Mode switching ──────────────────────────────────────────
+  function applyModes() {
+    const has = (m) => state.modes.has(m);
+    $('#rail').classList.toggle('is-on', has('rail'));
+    $('#pill').classList.toggle('is-on', has('pill'));
+    $('#spine').classList.toggle('is-on', has('spine'));
+    $('#crumb').classList.toggle('is-on', has('crumb'));
+    $('#peek').classList.toggle('is-on', has('peek'));
+    // recompute spine ticks because the container size can shift
+    if (has('spine')) {
+      requestAnimationFrame(() => {
+        recomputeOffsets();
+        renderSpine();
+        renderSpineProgress();
+      });
+    }
+  }
+
+  function applySide() {
+    ['rail', 'spine', 'peek'].forEach(name => {
+      const el = $('#' + name);
+      el.classList.toggle('is-side-left', state.side === 'left');
+      el.classList.toggle('is-side-right', state.side === 'right');
+    });
+    // re-render spine because tick positions are vertical only but
+    // labels need to know which side to flip to
+    if (state.modes.has('spine')) renderSpine();
+  }
+
+  function applyDepth() {
+    renderRail();
+    renderPill();
+    renderSpine();
+    renderCrumb();
+    renderPeek();
+    renderCurrent();
+  }
+
+  // ─── Wiring ─────────────────────────────────────────────────
+
+  // Labs buttons
+  $$('.labs__btn[data-mode]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const m = btn.dataset.mode;
+      if (state.modes.has(m)) {
+        state.modes.delete(m);
+        btn.classList.remove('is-on');
+      } else {
+        state.modes.add(m);
+        btn.classList.add('is-on');
+      }
+      applyModes();
+    });
+  });
+
+  $('#side-select').addEventListener('change', (e) => {
+    state.side = e.target.value;
+    applySide();
+  });
+
+  $('#depth-select').addEventListener('change', (e) => {
+    state.maxDepth = parseInt(e.target.value, 10);
+    applyDepth();
+  });
+
+  // Rail: close button + collapsed pill
+  $('#rail-close').addEventListener('click', () => {
+    const rail = $('#rail');
+    rail.classList.add('rail--collapsed');
+    rail.querySelector('.rail__head').firstElementChild.textContent = '☰ contents';
+    rail.addEventListener('click', expandRail, { once: true });
+  });
+  function expandRail() {
+    const rail = $('#rail');
+    rail.classList.remove('rail--collapsed');
+    rail.querySelector('.rail__head').firstElementChild.textContent = 'Contents';
+  }
+
+  // Pill: toggle open/close, click outside to dismiss
+  $('#pill-toggle').addEventListener('click', (e) => {
+    e.stopPropagation();
+    $('#pill').classList.toggle('is-open');
+  });
+  document.addEventListener('click', (e) => {
+    const pill = $('#pill');
+    if (pill.classList.contains('is-open') && !pill.contains(e.target)) {
+      pill.classList.remove('is-open');
+    }
+    const crumb = $('#crumb');
+    if (crumb.classList.contains('is-open') && !crumb.contains(e.target)) {
+      crumb.classList.remove('is-open');
+    }
+  });
+
+  // Crumb expand
+  $('#crumb-expand').addEventListener('click', (e) => {
+    e.stopPropagation();
+    $('#crumb').classList.toggle('is-open');
+  });
+
+  // Peek: mouse-edge slide-in
+  let peekHideTimer = null;
+  function setupPeek() {
+    const peek = $('#peek');
+    document.addEventListener('mousemove', (e) => {
+      if (!state.modes.has('peek')) return;
+      const threshold = 28;
+      const nearEdge = state.side === 'left'
+        ? e.clientX < threshold
+        : e.clientX > window.innerWidth - threshold;
+      const insidePeek = peek.contains(e.target);
+      if (nearEdge || insidePeek) {
+        clearTimeout(peekHideTimer);
+        peek.classList.add('is-peeking');
+      } else if (peek.classList.contains('is-peeking')) {
+        clearTimeout(peekHideTimer);
+        peekHideTimer = setTimeout(() => peek.classList.remove('is-peeking'), 350);
+      }
+    });
+  }
+  setupPeek();
+
+  // Overlay: hotkey, search, arrow nav
+  function openOverlay() {
+    overlayActive = 0;
+    $('#overlay').classList.add('is-open');
+    $('#overlay-input').value = '';
+    renderOverlay('');
+    setTimeout(() => $('#overlay-input').focus(), 0);
+  }
+  function closeOverlay() {
+    $('#overlay').classList.remove('is-open');
+  }
+  $('#overlay-hint').addEventListener('click', openOverlay);
+  $('#overlay-input').addEventListener('input', (e) => {
+    overlayActive = 0;
+    renderOverlay(e.target.value);
+  });
+  $('#overlay-input').addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      overlayActive = Math.min(overlayActive + 1, overlayItems.length - 1);
+      renderOverlay($('#overlay-input').value);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      overlayActive = Math.max(overlayActive - 1, 0);
+      renderOverlay($('#overlay-input').value);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const h = overlayItems[overlayActive];
+      if (h) {
+        jumpTo(h.id);
+        closeOverlay();
+      }
+    } else if (e.key === 'Escape') {
+      closeOverlay();
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT') return;
+    if (e.key === '/' || (e.metaKey && e.key === 'k')) {
+      e.preventDefault();
+      openOverlay();
+    } else if (e.key === 'Escape') {
+      closeOverlay();
+    }
+  });
+  $('#overlay').addEventListener('click', (e) => {
+    if (e.target.id === 'overlay') closeOverlay();
+  });
+
+  // Scroll + resize listeners
+  let ticking = false;
+  function onScroll() {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        updateCurrent();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', () => {
+    recomputeOffsets();
+    if (state.modes.has('spine')) renderSpine();
+    renderSpineProgress();
+  });
+
+  // ─── First paint ─────────────────────────────────────────────
+  recomputeOffsets();
+  renderRail();
+  renderPill();
+  renderSpine();
+  renderCrumb();
+  renderPeek();
+  applyModes();
+  applySide();
+  updateCurrent();
+
+})();
+</script>
+
+</body>
+</html>

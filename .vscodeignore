@@ -8,6 +8,9 @@ tsconfig.json
 dist-vsix/**
 *.vsix
 
+# Design prototypes (not shipped)
+prototypes/**
+
 # Dev tooling
 node_modules/**
 package-lock.json

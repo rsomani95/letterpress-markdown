@@ -10,6 +10,12 @@ A VSCode extension for typographically refined markdown preview and a calmer edi
 
 **Color swatches** — Inline `` `#hex` `` codes get a small filled circle prefix showing the actual color, matching the editor's built-in color decorator. Supports 3/4/6/8-digit hex; block code is left alone.
 
+**Table of contents** — Two modes, persisted per browser:
+- *Breadcrumb* (default): a slim sticky bar at the top showing the current heading path (`Section › Subsection › Current`). Appears once you've scrolled past the first heading. The right edge has a `☰ all` button that opens a dropdown of every heading.
+- *Rail*: a faded vertical list in the right margin. Brightens on hover. Only active when the window is wide enough (≥1080px) — narrower windows fall back to the breadcrumb automatically.
+
+Switch modes from inside each one — dropdown footer in breadcrumb, header link in rail. Press `/` anywhere in the preview to bring up a fuzzy-filterable overlay of all headings (arrow keys + Enter to jump, Esc to dismiss).
+
 **Word counter** — Status bar item (bottom-right) showing total prose word count. Strips markdown syntax (code blocks, link URLs, heading markers) before counting. Shows selected word count when text is selected. Only visible for markdown files.
 
 **Editor defaults** — Soft `[markdown]` settings for a plaintext-like editing feel: word wrap at 80 columns, no line numbers, no minimap, no autocomplete. Override any of these in your `settings.json`.
