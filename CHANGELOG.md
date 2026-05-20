@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.1
+
+- Breadcrumb is now persistently visible at the top of the preview instead of sliding in once you've scrolled past the first heading. Sits just above the width slider so neither obscures the other.
+- Removed the `☰ all` pill from the right side of the breadcrumb. Expanding the TOC now happens by clicking anywhere on the bar — a small `▾` chevron next to the current heading marks it as expandable and rotates when the dropdown is open. Ancestor segments still jump to their heading on click.
+- Dropdown opens centered below the breadcrumb (was right-anchored).
+
 ## 0.4.0
 
 - Table of contents in preview. Two modes:

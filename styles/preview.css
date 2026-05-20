@@ -462,17 +462,22 @@ em {
   font-size: 12px;
   padding: 0.45em 1rem 0.45em 1.4rem;
   color: color-mix(in srgb, var(--vscode-editor-foreground) 55%, transparent);
-  transform: translateY(-100%);
-  opacity: 0;
-  pointer-events: none;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
+  transition: background 0.15s ease;
 }
-.letterpress-toc-crumb.is-visible {
-  transform: translateY(0);
-  opacity: 1;
-  pointer-events: auto;
+.letterpress-toc-crumb:hover {
+  background: color-mix(in srgb, var(--vscode-editor-background) 80%, transparent);
+}
+
+/* Make room for the persistent breadcrumb. The width-slider scrolls
+   into the next 2em strip just below; content sits below both. */
+body:has(.letterpress-toc-crumb) {
+  padding-top: 4em;
+}
+body:has(.letterpress-toc-crumb) .letterpress-width-slider {
+  top: 2em;
 }
 
 .letterpress-toc-crumb__path {
@@ -484,15 +489,14 @@ em {
   min-width: 0;
 }
 .letterpress-toc-crumb__seg {
-  cursor: pointer;
   color: color-mix(in srgb, var(--vscode-editor-foreground) 55%, transparent);
   white-space: nowrap;
   transition: color 0.12s ease;
 }
-.letterpress-toc-crumb__seg:hover {
+.letterpress-toc-crumb__seg--ancestor:hover {
   color: var(--vscode-editor-foreground);
 }
-.letterpress-toc-crumb__seg:last-child {
+.letterpress-toc-crumb__seg--current {
   color: var(--vscode-textLink-foreground, var(--vscode-editor-foreground));
   font-style: italic;
   font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif;
@@ -502,35 +506,28 @@ em {
 }
 .letterpress-toc-crumb__sep { opacity: 0.4; }
 
-.letterpress-toc-crumb__expand {
-  appearance: none;
-  background: color-mix(in srgb, var(--vscode-editor-background) 50%, transparent);
-  border: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 15%, transparent);
-  color: color-mix(in srgb, var(--vscode-editor-foreground) 70%, transparent);
-  font: inherit;
-  padding: 0.25em 0.7em;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 0.9em;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35em;
-  flex-shrink: 0;
-  transition: all 0.15s ease;
+.letterpress-toc-crumb__chevron {
+  display: inline-block;
+  font-style: normal;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.55em;
+  opacity: 0.45;
+  margin-left: 0.5em;
+  vertical-align: middle;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
-.letterpress-toc-crumb__expand:hover {
-  color: var(--vscode-editor-foreground);
-  border-color: color-mix(in srgb, var(--vscode-editor-foreground) 25%, transparent);
-  background: color-mix(in srgb, var(--vscode-editor-background) 70%, transparent);
+.letterpress-toc-crumb:hover .letterpress-toc-crumb__chevron { opacity: 0.85; }
+.letterpress-toc-crumb.is-open .letterpress-toc-crumb__chevron {
+  opacity: 1;
+  transform: rotate(180deg);
 }
-.letterpress-toc-crumb__expand-icon { font-size: 0.95em; opacity: 0.9; }
 
 .letterpress-toc-crumb__menu {
   position: absolute;
   top: 100%;
-  right: 1rem;
-  width: 320px;
-  max-width: calc(100vw - 2rem);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(580px, calc(100vw - 2rem));
   max-height: 70vh;
   overflow-y: auto;
   background: color-mix(in srgb, var(--vscode-editor-background) 94%, transparent);
@@ -542,6 +539,7 @@ em {
   display: none;
   border-radius: 0 0 8px 8px;
   scrollbar-width: thin;
+  cursor: default;
 }
 .letterpress-toc-crumb.is-open .letterpress-toc-crumb__menu { display: block; }
 

@@ -5,7 +5,6 @@
   var DEFAULT_MODE = 'breadcrumb';   // 'breadcrumb' | 'rail'
   var MAX_DEPTH = 3;                  // H1–H3 in main TOC, H1–H4 in overlay
   var RAIL_MIN_WIDTH = 1080;          // px — below this, rail falls back to breadcrumb
-  var CRUMB_HIDE_THRESHOLD_PX = 30;   // hide breadcrumb until first heading is mostly above viewport top
   var PATH_MAX_SEGMENTS = 3;          // collapse middle path segments beyond this
 
   var headings = [];
@@ -98,7 +97,6 @@
     if (mode === 'breadcrumb') buildBreadcrumb();
     else if (mode === 'rail') buildRail();
     renderCurrent();
-    updateCrumbVisibility();
   }
 
   // ─── Breadcrumb ──────────────────────────────────────────────
@@ -107,14 +105,11 @@
     crumb.className = 'letterpress-toc-crumb';
     crumb.innerHTML =
       '<div class="letterpress-toc-crumb__path"></div>' +
-      '<button class="letterpress-toc-crumb__expand" title="Show all headings" type="button">' +
-        '<span class="letterpress-toc-crumb__expand-icon">☰</span>' +
-        '<span>all</span>' +
-      '</button>' +
       '<div class="letterpress-toc-crumb__menu"></div>';
 
-    crumb.querySelector('.letterpress-toc-crumb__expand').addEventListener('click', function (e) {
-      e.stopPropagation();
+    // The whole bar is the expand affordance. Ancestor segments call
+    // stopPropagation() so they jump instead of opening the dropdown.
+    crumb.addEventListener('click', function () {
       crumb.classList.toggle('is-open');
     });
 
@@ -139,10 +134,13 @@
     var displayed = truncated ? path.slice(-PATH_MAX_SEGMENTS) : path;
     if (truncated) {
       var ell = document.createElement('span');
-      ell.className = 'letterpress-toc-crumb__seg';
+      ell.className = 'letterpress-toc-crumb__seg letterpress-toc-crumb__seg--ancestor';
       ell.textContent = '…';
       ell.title = path.slice(0, -PATH_MAX_SEGMENTS).map(function (h) { return h.text; }).join(' › ');
-      ell.addEventListener('click', function () { jumpTo(path[0].id); });
+      ell.addEventListener('click', function (e) {
+        e.stopPropagation();
+        jumpTo(path[0].id);
+      });
       pathEl.appendChild(ell);
       var sep = document.createElement('span');
       sep.className = 'letterpress-toc-crumb__sep';
@@ -156,10 +154,25 @@
         s.textContent = '›';
         pathEl.appendChild(s);
       }
+      var isCurrent = i === displayed.length - 1;
       var seg = document.createElement('span');
-      seg.className = 'letterpress-toc-crumb__seg';
+      seg.className = 'letterpress-toc-crumb__seg ' +
+        (isCurrent ? 'letterpress-toc-crumb__seg--current' : 'letterpress-toc-crumb__seg--ancestor');
       seg.textContent = h.text;
-      seg.addEventListener('click', function () { jumpTo(h.id); });
+      if (isCurrent) {
+        // Append the chevron — its click bubbles to the crumb and toggles.
+        var chev = document.createElement('span');
+        chev.className = 'letterpress-toc-crumb__chevron';
+        chev.textContent = '▾';
+        seg.appendChild(chev);
+      } else {
+        // Ancestor — clicking jumps and shouldn't toggle the dropdown.
+        seg.style.cursor = 'pointer';
+        seg.addEventListener('click', function (e) {
+          e.stopPropagation();
+          jumpTo(h.id);
+        });
+      }
       pathEl.appendChild(seg);
     });
   }
@@ -176,6 +189,7 @@
       a.dataset.idx = headings.indexOf(h);
       a.addEventListener('click', function (e) {
         e.preventDefault();
+        e.stopPropagation();
         jumpTo(h.id);
         elements.crumb.classList.remove('is-open');
       });
@@ -188,24 +202,13 @@
     sw.type = 'button';
     sw.className = 'letterpress-toc-mode-switch';
     sw.textContent = 'Switch to rail view →';
-    sw.addEventListener('click', function () {
+    sw.addEventListener('click', function (e) {
+      e.stopPropagation();
       elements.crumb.classList.remove('is-open');
       setMode('rail');
     });
     footer.appendChild(sw);
     menu.appendChild(footer);
-  }
-
-  function updateCrumbVisibility() {
-    if (!elements.crumb) return;
-    var firstH = visibleHeadings()[0];
-    if (!firstH) {
-      elements.crumb.classList.remove('is-visible');
-      return;
-    }
-    var show = firstH.el.getBoundingClientRect().bottom < CRUMB_HIDE_THRESHOLD_PX;
-    if (!show) elements.crumb.classList.remove('is-open');
-    elements.crumb.classList.toggle('is-visible', show);
   }
 
   // ─── Rail ────────────────────────────────────────────────────
@@ -334,7 +337,6 @@
       currentIdx = idx;
       renderCurrent();
     }
-    updateCrumbVisibility();
   }
 
   function renderCurrent() {
