@@ -2,7 +2,7 @@
   "name": "letterpress-markdown",
   "displayName": "Letterpress Markdown",
   "description": "Centered, typographically refined markdown preview with word counter",
-  "version": "0.4.1",
+  "version": "0.4.5",
   "publisher": "rsomani95",
   "license": "MIT",
   "icon": "icon.png",

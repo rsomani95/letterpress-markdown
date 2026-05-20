@@ -2,9 +2,14 @@
   'use strict';
 
   var STORAGE_MODE = 'letterpress.toc.mode';
-  var DEFAULT_MODE = 'breadcrumb';   // 'breadcrumb' | 'rail'
+  var DEFAULT_MODE = 'rail';         // 'breadcrumb' | 'rail'
   var MAX_DEPTH = 3;                  // H1–H3 in main TOC, H1–H4 in overlay
-  var RAIL_MIN_WIDTH = 1080;          // px — below this, rail falls back to breadcrumb
+  var RAIL_WIDTH = 200;               // px — must match .letterpress-toc-rail width
+  var RAIL_GAP = 24;                  // px — minimum gap between content column and rail
+  var RAIL_EDGE = 16;                 // px — minimum gap between rail and viewport edge
+  var SLIDER_MIN = 480;               // px — must match width-slider.js MIN
+  var SLIDER_MAX = 1280;              // px — must match width-slider.js MAX
+  var SLIDER_STEP = 20;               // px — must match width-slider.js STEP
   var PATH_MAX_SEGMENTS = 3;          // collapse middle path segments beyond this
 
   var headings = [];
@@ -74,14 +79,49 @@
 
   function jumpTo(id) {
     var el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (el) el.scrollIntoView({ block: 'start' });
   }
 
   // ─── Mode dispatcher ─────────────────────────────────────────
+  function railSidePadding() {
+    return RAIL_WIDTH + RAIL_GAP + RAIL_EDGE;
+  }
+
   function chooseEffectiveMode() {
     var mode = getMode();
-    if (mode === 'rail' && window.innerWidth < RAIL_MIN_WIDTH) return 'breadcrumb';
+    if (mode === 'rail') {
+      // Only fall back when the viewport is too narrow for the rail at
+      // even the slider's minimum content width. Above that threshold we
+      // keep rail and clip the slider's max instead.
+      var minViewport = SLIDER_MIN + 2 * railSidePadding();
+      if (window.innerWidth < minViewport) return 'breadcrumb';
+    }
     return mode;
+  }
+
+  // ─── Slider constraint ───────────────────────────────────────
+  // In rail mode the content column has to leave room for the rail. Rather
+  // than auto-hiding the rail when the user widens, we cap how wide the
+  // user can drag the width slider.
+  function constrainSliderForRail() {
+    var input = document.querySelector('#letterpress-width-slider-root .letterpress-width-slider__input');
+    if (!input) return;
+    var allowed;
+    if (chooseEffectiveMode() === 'rail') {
+      allowed = window.innerWidth - 2 * railSidePadding();
+      allowed = Math.max(SLIDER_MIN, Math.min(SLIDER_MAX, allowed));
+      allowed = Math.floor(allowed / SLIDER_STEP) * SLIDER_STEP;
+    } else {
+      allowed = SLIDER_MAX;
+    }
+    input.max = String(allowed);
+    if (parseInt(input.value, 10) > allowed) {
+      // Drive the slider through its own input/change handlers so it
+      // updates label, applies --letterpress-width, and persists.
+      input.value = String(allowed);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
   }
 
   function teardown() {
@@ -91,12 +131,14 @@
 
   function renderTOC() {
     var mode = chooseEffectiveMode();
-    if (mode === activeMode) return;
-    teardown();
-    activeMode = mode;
-    if (mode === 'breadcrumb') buildBreadcrumb();
-    else if (mode === 'rail') buildRail();
-    renderCurrent();
+    if (mode !== activeMode) {
+      teardown();
+      activeMode = mode;
+      if (mode === 'breadcrumb') buildBreadcrumb();
+      else if (mode === 'rail') buildRail();
+      renderCurrent();
+    }
+    constrainSliderForRail();
   }
 
   // ─── Breadcrumb ──────────────────────────────────────────────
@@ -201,7 +243,7 @@
     var sw = document.createElement('button');
     sw.type = 'button';
     sw.className = 'letterpress-toc-mode-switch';
-    sw.textContent = 'Switch to rail view →';
+    sw.textContent = 'Switch to Rail view →';
     sw.addEventListener('click', function (e) {
       e.stopPropagation();
       elements.crumb.classList.remove('is-open');
@@ -218,7 +260,7 @@
     rail.innerHTML =
       '<div class="letterpress-toc-rail__head">' +
         '<span>Contents</span>' +
-        '<button class="letterpress-toc-mode-switch" type="button" title="Switch to breadcrumb">← crumb</button>' +
+        '<button class="letterpress-toc-mode-switch" type="button" title="Switch to Breadcrumb">← Breadcrumb</button>' +
       '</div>' +
       '<div class="letterpress-toc-rail__list"></div>';
 
@@ -362,6 +404,7 @@
     if (headings.length === 0) {
       teardown();
       activeMode = null;
+      constrainSliderForRail();   // restore slider max if rail was previously active
       return;
     }
     buildOverlay();
@@ -392,8 +435,7 @@
 
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', function () {
-    activeMode = null;
-    renderTOC();
+    renderTOC();   // re-evaluates mode + re-applies slider cap for new viewport
   });
 
   if (document.readyState === 'loading') {

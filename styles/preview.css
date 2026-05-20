@@ -21,6 +21,13 @@ html, body {
 
 /* ── Headings ── */
 
+/* Buffer above headings when jumped to via TOC click. Larger when the
+   breadcrumb is on so the heading clears the persistent top bar. */
+h1, h2, h3, h4, h5, h6 { scroll-margin-top: 2.5em; }
+body:has(.letterpress-toc-crumb) :is(h1, h2, h3, h4, h5, h6) {
+  scroll-margin-top: 4.5em;
+}
+
 h1, h2, h3 {
   font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif;
   font-style: italic;
@@ -525,9 +532,8 @@ body:has(.letterpress-toc-crumb) .letterpress-width-slider {
 .letterpress-toc-crumb__menu {
   position: absolute;
   top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(580px, calc(100vw - 2rem));
+  left: 1rem;
+  width: min(380px, calc(100vw - 2rem));
   max-height: 70vh;
   overflow-y: auto;
   background: color-mix(in srgb, var(--vscode-editor-background) 94%, transparent);

@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.4.5
+
+- Clicks on TOC items (rail, breadcrumb dropdown, overlay) now jump to the heading instantly instead of smooth-scrolling.
+- Added `scroll-margin-top` on headings so jumps land cleanly below the breadcrumb (when active) instead of behind it.
+
+## 0.4.4
+
+- Rail is preserved when widening: instead of swapping to Breadcrumb once the prose column gets too wide for the rail, the width slider's max is clipped to whatever still leaves room for the rail. The user can't drag past it, and if they had a previously-saved width that no longer fits, it's clamped down. Breadcrumb fallback now only kicks in when the viewport is genuinely too narrow for the rail at any content width.
+
+## 0.4.3
+
+- Rail now correctly falls back to Breadcrumb when the content column is too wide to leave it room (previously it would overlap the prose). The threshold is dynamic on the current preview width, so widening or narrowing via the slider swaps modes in real time.
+
+## 0.4.2
+
+- Default TOC mode is now Rail (was Breadcrumb). Narrower windows still fall back to Breadcrumb automatically.
+- Breadcrumb dropdown now opens from the left edge instead of centered — keeps the eye in one column rather than jumping across the bar.
+- Capitalised the mode names in the in-UI switch labels: "Switch to Rail view" / "← Breadcrumb".
+
 ## 0.4.1
 
 - Breadcrumb is now persistently visible at the top of the preview instead of sliding in once you've scrolled past the first heading. Sits just above the width slider so neither obscures the other.
