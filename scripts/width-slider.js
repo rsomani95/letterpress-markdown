@@ -108,7 +108,9 @@
 
     var root = document.createElement('div');
     root.id = SLIDER_ID;
-    root.className = 'letterpress-width-slider';
+    // Hidden by default — summoned with `w` (see the keydown handler below).
+    // Width still applies and persists while hidden; this only hides the chrome.
+    root.className = 'letterpress-width-slider is-hidden';
 
     var label = document.createElement('span');
     label.className = 'letterpress-width-slider__label';
@@ -153,6 +155,55 @@
 
     document.body.insertBefore(root, document.body.firstChild);
   }
+
+  // ─── Summon / dismiss ────────────────────────────────────────
+  // The slider is a floating overlay revealed on demand rather than a permanent
+  // strip at the top of the preview. `w` toggles it; `Esc` dismisses it.
+  function sliderEl() {
+    return document.getElementById(SLIDER_ID);
+  }
+
+  function showSlider() {
+    var el = sliderEl();
+    if (!el) return;
+    el.classList.remove('is-hidden');
+    var input = el.querySelector('.letterpress-width-slider__input');
+    if (input) setTimeout(function () { input.focus(); }, 0);  // arrow keys adjust width
+  }
+
+  function hideSlider() {
+    var el = sliderEl();
+    if (el) el.classList.add('is-hidden');
+  }
+
+  function toggleSlider() {
+    var el = sliderEl();
+    if (!el) return;
+    if (el.classList.contains('is-hidden')) showSlider();
+    else hideSlider();
+  }
+
+  // Don't hijack `w` while the user is typing (e.g. the TOC overlay search).
+  // The range input is fine — pressing `w` there should still dismiss.
+  function isTextEntry(t) {
+    if (!t) return false;
+    if (t.isContentEditable) return true;
+    if (t.tagName === 'TEXTAREA') return true;
+    if (t.tagName === 'INPUT') {
+      var type = (t.getAttribute('type') || 'text').toLowerCase();
+      return type !== 'range' && type !== 'checkbox' && type !== 'button';
+    }
+    return false;
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { hideSlider(); return; }
+    if ((e.key === 'w' || e.key === 'W') && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      if (isTextEntry(e.target)) return;
+      e.preventDefault();
+      toggleSlider();
+    }
+  });
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', buildSlider);

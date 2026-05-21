@@ -1,5 +1,44 @@
 # Changelog
 
+## 0.7.2
+
+- Added `s` as a hotkey to flip the rail to the other margin (left ⇄ right) — the keyboard equivalent of the `⇄` control. Active while the rail is showing.
+
+## 0.7.1
+
+- Moved the breadcrumb's switch-to-rail (`≡`) control to the far left of the bar, ahead of the heading path — it was too easy to miss tucked at the right edge.
+
+## 0.7.0
+
+Made TOC mode as reliable as the width and rail-side controls by taking it off VS Code settings entirely.
+
+- **TOC mode is now a preview-local preference.** Toggle rail ⇄ breadcrumb with `t`, or the `≡` control in the rail header / breadcrumb bar. Saved in `localStorage`, so it persists across documents and projects. Rail stays the default.
+- **Removed all the settings/extension-host machinery** that made the setting flaky: the `letterpress.toc.defaultMode` setting, the `markdown.markdownItPlugins` contribution + `extendMarkdownIt` injection, the config-change refresh, and the `Letterpress: Settings` command. The extension host is back to just the word counter. A setting can't be reliably pushed into the preview webview (VS Code owns it); `localStorage` is the native, dependable channel — the same one the column width and rail side already use.
+
+If you still have `letterpress.toc.defaultMode` or `letterpress.toc.railSide` in your `settings.json`, they're now unused — safe to delete.
+
+## 0.6.0
+
+Simplified the TOC controls so each preference has exactly one home:
+
+- **TOC mode is now settings-only.** Removed the in-preview mode switches (the "Switch to Rail view" footer in the breadcrumb dropdown and the "← Breadcrumb" button in the rail header). Rail vs breadcrumb is chosen solely by `letterpress.toc.defaultMode`. No more per-browser override to get out of sync with the setting.
+- **Rail side is now flip-only.** Removed the `letterpress.toc.railSide` setting. The `⇄` control in the rail header is the only way to switch sides, and the choice persists across documents and projects via `localStorage` — same as the column width.
+- Cleaned up the now-unused `localStorage` keys from the ≤0.5.x mode toggle and settings-reconciliation on load.
+
+## 0.5.1
+
+- **Fix: settings weren't reaching the preview.** `extendMarkdownIt` is only invoked when the extension declares `"markdown.markdownItPlugins": true` in `contributes` — that declaration was missing, so `letterpress.toc.*` never got injected and the rail always fell back to the right, regardless of `railSide`.
+- **Fix: changing a setting now overrides a stale in-preview toggle.** A live mode/side switch is remembered per browser, but it was shadowing the setting permanently — so setting `defaultMode` to `rail` did nothing if you'd ever switched to breadcrumb. Now the preview tracks the last-applied setting value; when the setting changes, the stale override is cleared and the new default wins. A live toggle still sticks until you next change the setting.
+
+## 0.5.0
+
+- **Settings.** Two settings, reachable from the command palette via `Letterpress: Settings` (or Preferences → search "letterpress"):
+  - `letterpress.toc.defaultMode` — `rail` (default) or `breadcrumb`; the starting TOC style for new previews.
+  - `letterpress.toc.railSide` — `right` (default) or `left`; which margin the rail occupies.
+  These are defaults; the in-preview controls still override them per browser. Settings reach the preview via `extendMarkdownIt` (injected as a hidden data span) and a refresh-on-change, since the built-in preview webview can't be messaged from the extension host.
+- **Left rail.** The TOC rail can now sit in the left margin, not just the right. Set it via `letterpress.toc.railSide`, or flip it live with the new `⇄` control in the rail header. The width slider's cap already reserves room symmetrically, so the left rail needs no extra space handling.
+- **Width slider is summoned, not always shown.** It no longer occupies a faint strip at the top of every preview. Press `w` to bring it up as a floating control, `w` or `Esc` to dismiss. Per-document width and persistence are unchanged — the width still applies while the slider is hidden; this only removes the always-present chrome.
+
 ## 0.4.5
 
 - Clicks on TOC items (rail, breadcrumb dropdown, overlay) now jump to the heading instantly instead of smooth-scrolling.

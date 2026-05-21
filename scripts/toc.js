@@ -1,8 +1,11 @@
 (function () {
   'use strict';
 
-  var STORAGE_MODE = 'letterpress.toc.mode';
+  var STORAGE_MODE = 'letterpress.toc.mode';      // rail vs breadcrumb — toggled with `t` or the ≡ header control
   var DEFAULT_MODE = 'rail';         // 'breadcrumb' | 'rail'
+  var STORAGE_SIDE = 'letterpress.toc.railSide';  // rail side — flipped with ⇄
+  var DEFAULT_SIDE = 'right';        // 'left' | 'right'
+  // Both are preview-local prefs in localStorage — they persist across documents and projects.
   var MAX_DEPTH = 3;                  // H1–H3 in main TOC, H1–H4 in overlay
   var RAIL_WIDTH = 200;               // px — must match .letterpress-toc-rail width
   var RAIL_GAP = 24;                  // px — minimum gap between content column and rail
@@ -20,6 +23,9 @@
   var overlayActive = 0;
 
   // ─── Helpers ─────────────────────────────────────────────────
+  // Mode and side are preview-local prefs in localStorage — no VS Code settings,
+  // no extension-host channel. Toggle mode with `t` or the ≡ control; flip side
+  // with ⇄. Both persist across documents and projects on their own.
   function getMode() {
     try {
       var m = localStorage.getItem(STORAGE_MODE);
@@ -30,9 +36,34 @@
 
   function setMode(m) {
     try { localStorage.setItem(STORAGE_MODE, m); } catch (e) {}
-    activeMode = null;   // force re-render
+    activeMode = null;   // force a rebuild into the new mode
     renderTOC();
     updateCurrent();
+  }
+
+  function toggleMode() {
+    setMode(getMode() === 'rail' ? 'breadcrumb' : 'rail');
+  }
+
+  function getSide() {
+    try {
+      var s = localStorage.getItem(STORAGE_SIDE);
+      if (s === 'left' || s === 'right') return s;
+    } catch (e) {}
+    return DEFAULT_SIDE;
+  }
+
+  function setSide(s) {
+    try { localStorage.setItem(STORAGE_SIDE, s); } catch (e) {}
+    applySide();   // CSS swaps left/right off the attribute — no rebuild needed
+  }
+
+  function applySide() {
+    if (elements.rail) elements.rail.setAttribute('data-side', getSide());
+  }
+
+  function toggleSide() {
+    setSide(getSide() === 'right' ? 'left' : 'right');
   }
 
   function getHeadingText(heading) {
@@ -146,6 +177,7 @@
     var crumb = document.createElement('div');
     crumb.className = 'letterpress-toc-crumb';
     crumb.innerHTML =
+      '<button class="letterpress-toc-mode-toggle letterpress-toc-mode-toggle--to-rail" type="button" title="Switch to rail (t)">≡</button>' +
       '<div class="letterpress-toc-crumb__path"></div>' +
       '<div class="letterpress-toc-crumb__menu"></div>';
 
@@ -153,6 +185,10 @@
     // stopPropagation() so they jump instead of opening the dropdown.
     crumb.addEventListener('click', function () {
       crumb.classList.toggle('is-open');
+    });
+    crumb.querySelector('.letterpress-toc-mode-toggle').addEventListener('click', function (e) {
+      e.stopPropagation();   // switch mode, don't open the dropdown
+      setMode('rail');
     });
 
     document.body.appendChild(crumb);
@@ -237,36 +273,27 @@
       });
       menu.appendChild(a);
     });
-    // Mode-switch footer
-    var footer = document.createElement('div');
-    footer.className = 'letterpress-toc-menu-footer';
-    var sw = document.createElement('button');
-    sw.type = 'button';
-    sw.className = 'letterpress-toc-mode-switch';
-    sw.textContent = 'Switch to Rail view →';
-    sw.addEventListener('click', function (e) {
-      e.stopPropagation();
-      elements.crumb.classList.remove('is-open');
-      setMode('rail');
-    });
-    footer.appendChild(sw);
-    menu.appendChild(footer);
   }
 
   // ─── Rail ────────────────────────────────────────────────────
   function buildRail() {
     var rail = document.createElement('aside');
     rail.className = 'letterpress-toc-rail';
+    rail.setAttribute('data-side', getSide());
     rail.innerHTML =
       '<div class="letterpress-toc-rail__head">' +
         '<span>Contents</span>' +
-        '<button class="letterpress-toc-mode-switch" type="button" title="Switch to Breadcrumb">← Breadcrumb</button>' +
+        '<span class="letterpress-toc-rail__actions">' +
+          '<button class="letterpress-toc-mode-toggle letterpress-toc-mode-toggle--to-crumb" type="button" title="Switch to breadcrumb (t)">≡</button>' +
+          '<button class="letterpress-toc-rail-flip" type="button" title="Move rail to the other side (s)">⇄</button>' +
+        '</span>' +
       '</div>' +
       '<div class="letterpress-toc-rail__list"></div>';
 
-    rail.querySelector('.letterpress-toc-mode-switch').addEventListener('click', function () {
+    rail.querySelector('.letterpress-toc-mode-toggle').addEventListener('click', function () {
       setMode('breadcrumb');
     });
+    rail.querySelector('.letterpress-toc-rail-flip').addEventListener('click', toggleSide);
 
     var list = rail.querySelector('.letterpress-toc-rail__list');
     visibleHeadings().forEach(function (h) {
@@ -428,6 +455,14 @@
     if (e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey) {
       e.preventDefault();
       openOverlay();
+    } else if ((e.key === 't' || e.key === 'T') && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      if (isEditable) return;   // don't toggle while typing (incl. the overlay search)
+      e.preventDefault();
+      toggleMode();
+    } else if ((e.key === 's' || e.key === 'S') && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      if (isEditable || !elements.rail) return;   // only meaningful while the rail is showing
+      e.preventDefault();
+      toggleSide();
     } else if (e.key === 'Escape') {
       closeOverlay();
     }

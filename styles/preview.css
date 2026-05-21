@@ -282,32 +282,36 @@ em {
 }
 
 /* ── Width slider ── */
+/* A floating control summoned with `w` (see width-slider.js), not a permanent
+   strip. Centered over the top of the column; reserves no layout space. */
 
 .letterpress-width-slider {
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  position: fixed;
+  top: 0.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 13;
   display: flex;
   align-items: center;
   gap: 0.6em;
-  margin: -2em -1.5em var(--rhythm);
-  padding: 0.5em 1.5em;
+  width: min(var(--letterpress-width, 720px), calc(100vw - 2rem));
+  box-sizing: border-box;
+  padding: 0.5em 1em;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  font-size: 0.75em;
-  color: color-mix(in srgb, var(--vscode-editor-foreground) 60%, transparent);
-  background: color-mix(in srgb, var(--vscode-editor-background) 92%, transparent);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border-bottom: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 8%, transparent);
-  opacity: 0.15;
-  transition: opacity 0.2s ease;
+  font-size: 0.78em;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 75%, transparent);
+  background: color-mix(in srgb, var(--vscode-editor-background) 94%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 14%, transparent);
+  border-radius: 8px;
+  box-shadow: 0 8px 28px color-mix(in srgb, #000 35%, transparent);
   user-select: none;
   -webkit-user-select: none;
 }
 
-.letterpress-width-slider:hover,
-.letterpress-width-slider:focus-within {
-  opacity: 0.85;
+.letterpress-width-slider.is-hidden {
+  display: none;
 }
 
 .letterpress-width-slider__label {
@@ -427,29 +431,6 @@ em {
   color: color-mix(in srgb, var(--vscode-editor-foreground) 40%, transparent);
 }
 
-.letterpress-toc-menu-footer {
-  margin-top: 0.4em;
-  padding: 0.5em 1em 0.2em;
-  border-top: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 8%, transparent);
-}
-.letterpress-toc-mode-switch {
-  appearance: none;
-  background: none;
-  border: none;
-  color: color-mix(in srgb, var(--vscode-editor-foreground) 55%, transparent);
-  font: inherit;
-  font-size: 0.85em;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  cursor: pointer;
-  padding: 0;
-  text-align: left;
-  width: 100%;
-  transition: color 0.12s ease;
-}
-.letterpress-toc-mode-switch:hover {
-  color: var(--vscode-editor-foreground);
-}
-
 /* ── Breadcrumb ── */
 
 .letterpress-toc-crumb {
@@ -478,13 +459,14 @@ em {
   background: color-mix(in srgb, var(--vscode-editor-background) 80%, transparent);
 }
 
-/* Make room for the persistent breadcrumb. The width-slider scrolls
-   into the next 2em strip just below; content sits below both. */
+/* Make room for the persistent fixed breadcrumb. The width slider is now a
+   summoned overlay and reserves no layout space of its own. */
 body:has(.letterpress-toc-crumb) {
-  padding-top: 4em;
+  padding-top: 3em;
 }
+/* When the breadcrumb is present, drop the summoned slider just below it. */
 body:has(.letterpress-toc-crumb) .letterpress-width-slider {
-  top: 2em;
+  top: 2.8rem;
 }
 
 .letterpress-toc-crumb__path {
@@ -555,7 +537,6 @@ body:has(.letterpress-toc-crumb) .letterpress-width-slider {
   position: fixed;
   top: 4rem;
   bottom: 5rem;
-  right: max(1rem, calc((100vw - var(--letterpress-width, 720px)) / 2 - 220px));
   width: 200px;
   overflow-y: auto;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -568,6 +549,15 @@ body:has(.letterpress-toc-crumb) .letterpress-width-slider {
   scrollbar-width: thin;
   user-select: none;
   -webkit-user-select: none;
+}
+/* Which margin the rail sits in. Driven by the `data-side` attribute (set from
+   the railSide setting / live flip). Content is centered, so the slider's
+   width cap already reserves room symmetrically on both sides. */
+.letterpress-toc-rail[data-side="right"] {
+  right: max(1rem, calc((100vw - var(--letterpress-width, 720px)) / 2 - 220px));
+}
+.letterpress-toc-rail[data-side="left"] {
+  left: max(1rem, calc((100vw - var(--letterpress-width, 720px)) / 2 - 220px));
 }
 .letterpress-toc-rail:hover,
 .letterpress-toc-rail:focus-within {
@@ -586,15 +576,53 @@ body:has(.letterpress-toc-crumb) .letterpress-width-slider {
   margin-bottom: 0.5em;
   border-bottom: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 8%, transparent);
 }
-/* Rail header's mode-switch overrides the default block layout. */
-.letterpress-toc-rail__head .letterpress-toc-mode-switch {
-  width: auto;
-  text-transform: none;
-  letter-spacing: 0;
-  font-size: 1em;
-  opacity: 0.6;
+/* Mode toggle (≡) + side flip (⇄) share the right of the rail header. */
+.letterpress-toc-rail__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
 }
-.letterpress-toc-rail__head .letterpress-toc-mode-switch:hover { opacity: 1; }
+
+/* TOC mode toggle — appears in both the rail header and the breadcrumb bar.
+   The glyph points at the destination layout: horizontal bars = breadcrumb,
+   rotated to vertical = rail. */
+.letterpress-toc-mode-toggle {
+  appearance: none;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  flex: none;
+  width: 1.4em;
+  height: 1.4em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  font-size: 1.05em;
+  line-height: 1;
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+}
+.letterpress-toc-mode-toggle:hover { opacity: 1; }
+.letterpress-toc-mode-toggle--to-rail { transform: rotate(90deg); }
+
+/* Left/right flip control, pinned to the right of the rail header. */
+.letterpress-toc-rail-flip {
+  appearance: none;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  font-size: 1.15em;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+}
+.letterpress-toc-rail-flip:hover { opacity: 1; }
 
 /* Rail-specific item indents (tighter than the menu version). */
 .letterpress-toc-rail .letterpress-toc-item--h1 {

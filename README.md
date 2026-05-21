@@ -4,21 +4,34 @@ A VSCode extension for typographically refined markdown preview and a calmer edi
 
 ## What It Does
 
-**Preview styling** — Centered prose column (720px default, resizable per-doc via the slider at the top of the preview), opacity-based text hierarchy, gradient-faded dividers, consistent vertical rhythm. Inter for body, Instrument Serif italic for headings, JetBrains Mono for code. The aesthetic goal is calm legibility — text reads like a printed page, not a wall of UI.
+**Preview styling** — Centered prose column (720px default, resizable per-doc via a slider summoned with `w`), opacity-based text hierarchy, gradient-faded dividers, consistent vertical rhythm. Inter for body, Instrument Serif italic for headings, JetBrains Mono for code. The aesthetic goal is calm legibility — text reads like a printed page, not a wall of UI.
 
-**Width slider** — A faded slider at the top of the preview (brightens on hover) lets you resize the column live, anywhere from 480 to 1280px. The chosen width is remembered per-document, so each file restores its own preference. New documents inherit the last-used value. Click "reset" to return to 720px.
+**Width slider** — Press `w` anywhere in the preview to summon a floating slider; `w` again or `Esc` dismisses it. Resize the column live, anywhere from 480 to 1280px. The chosen width is remembered per-document, so each file restores its own preference — even across projects. New documents inherit the last-used value. Click "reset" to return to 720px. The slider stays out of the way until you call it up; your width still applies while it's hidden.
 
 **Color swatches** — Inline `` `#hex` `` codes get a small filled circle prefix showing the actual color, matching the editor's built-in color decorator. Supports 3/4/6/8-digit hex; block code is left alone.
 
-**Table of contents** — Two modes, persisted per browser:
-- *Breadcrumb* (default): a slim sticky bar at the top showing the current heading path (`Section › Subsection › Current`). Appears once you've scrolled past the first heading. The right edge has a `☰ all` button that opens a dropdown of every heading.
-- *Rail*: a faded vertical list in the right margin. Brightens on hover. Only active when the window is wide enough (≥1080px) — narrower windows fall back to the breadcrumb automatically.
+**Table of contents** — Two modes. Toggle between them by pressing `t`, or with the `≡` control in the rail header / breadcrumb bar; your choice is remembered across documents and projects:
+- *Rail* (default): a faded vertical list in the side margin. Brightens on hover. Sits on the right by default; flip sides with `s` or the `⇄` control in its header — the side also persists. Falls back to the breadcrumb automatically when the window is too narrow to fit it.
+- *Breadcrumb*: a slim sticky bar at the top showing the current heading path (`Section › Subsection › Current`). Click anywhere on the bar to drop down a list of every heading.
 
-Switch modes from inside each one — dropdown footer in breadcrumb, header link in rail. Press `/` anywhere in the preview to bring up a fuzzy-filterable overlay of all headings (arrow keys + Enter to jump, Esc to dismiss).
+Press `/` anywhere in the preview to bring up a fuzzy-filterable overlay of all headings (arrow keys + Enter to jump, Esc to dismiss).
 
 **Word counter** — Status bar item (bottom-right) showing total prose word count. Strips markdown syntax (code blocks, link URLs, heading markers) before counting. Shows selected word count when text is selected. Only visible for markdown files.
 
 **Editor defaults** — Soft `[markdown]` settings for a plaintext-like editing feel: word wrap at 80 columns, no line numbers, no minimap, no autocomplete. Override any of these in your `settings.json`.
+
+## Preview controls
+
+Everything adjustable lives *in* the preview as a keypress or a small control — there are no VS Code settings to manage. Each choice is saved in the preview's `localStorage`, so it persists across documents and projects on its own.
+
+| Control | Action |
+|---------|--------|
+| `w` | Summon / dismiss the column-width slider (`Esc` also dismisses) |
+| `t` / `≡` | Toggle the table of contents between rail and breadcrumb (`≡` control in the rail header / breadcrumb bar) |
+| `s` / `⇄` | Move the rail to the other margin (`⇄` control in the rail header; active while the rail is showing) |
+| `/` | Open the heading jump-overlay |
+
+> **Why no settings:** VS Code's built-in markdown preview runs in a webview this extension only contributes scripts to — the extension host can't message it live, and pushing a setting into it is unreliable. Keeping these in the preview (backed by `localStorage`) makes them instant, dependable, and identical on Remote-SSH.
 
 ## Installation
 
