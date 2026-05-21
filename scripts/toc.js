@@ -332,12 +332,19 @@
       renderOverlayList();
     });
     input.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowDown') {
+      // Ctrl+N / Ctrl+P mirror the arrow keys (Emacs-style). Require Ctrl alone
+      // so we don't shadow Cmd/Alt combos.
+      var emacs = e.ctrlKey && !e.metaKey && !e.altKey;
+      var next = e.key === 'ArrowDown' || (emacs && (e.key === 'n' || e.key === 'N'));
+      var prev = e.key === 'ArrowUp' || (emacs && (e.key === 'p' || e.key === 'P'));
+      if (next) {
         e.preventDefault();
+        e.stopPropagation();   // keep Ctrl+N from bubbling out to VS Code's "New File"
         overlayActive = Math.min(overlayActive + 1, overlayItems.length - 1);
         renderOverlayList();
-      } else if (e.key === 'ArrowUp') {
+      } else if (prev) {
         e.preventDefault();
+        e.stopPropagation();
         overlayActive = Math.max(overlayActive - 1, 0);
         renderOverlayList();
       } else if (e.key === 'Enter') {

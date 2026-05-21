@@ -14,7 +14,7 @@ A VSCode extension for typographically refined markdown preview and a calmer edi
 - *Rail* (default): a faded vertical list in the side margin. Brightens on hover. Sits on the right by default; flip sides with `s` or the `⇄` control in its header — the side also persists. Falls back to the breadcrumb automatically when the window is too narrow to fit it.
 - *Breadcrumb*: a slim sticky bar at the top showing the current heading path (`Section › Subsection › Current`). Click anywhere on the bar to drop down a list of every heading.
 
-Press `/` anywhere in the preview to bring up a fuzzy-filterable overlay of all headings (arrow keys + Enter to jump, Esc to dismiss).
+Press `/` anywhere in the preview to bring up a fuzzy-filterable overlay of all headings. It opens on the section you're currently reading; navigate with `↑`/`↓` or `Ctrl+P`/`Ctrl+N` (Emacs-style), Enter to jump, Esc to dismiss.
 
 **Word counter** — Status bar item (bottom-right) showing total prose word count. Strips markdown syntax (code blocks, link URLs, heading markers) before counting. Shows selected word count when text is selected. Only visible for markdown files.
 
@@ -29,7 +29,7 @@ Everything adjustable lives *in* the preview as a keypress or a small control �
 | `w` | Summon / dismiss the column-width slider (`Esc` also dismisses) |
 | `t` / `≡` | Toggle the table of contents between rail and breadcrumb (`≡` control in the rail header / breadcrumb bar) |
 | `s` / `⇄` | Move the rail to the other margin (`⇄` control in the rail header; active while the rail is showing) |
-| `/` | Open the heading jump-overlay |
+| `/` | Open the heading jump-overlay (then `↑`/`↓` or `Ctrl+P`/`Ctrl+N` to move, Enter to jump, Esc to close) |
 
 > **Why no settings:** VS Code's built-in markdown preview runs in a webview this extension only contributes scripts to — the extension host can't message it live, and pushing a setting into it is unreliable. Keeping these in the preview (backed by `localStorage`) makes them instant, dependable, and identical on Remote-SSH.
 
