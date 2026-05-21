@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.1
+
+- **Removed the amber focus ring on the overlay's search field.** VS Code's preview stylesheet applies `input:focus { outline: 1px solid -webkit-focus-ring-color }`, which outranked the extension's `outline: none` on specificity — so the box was always ringed while the overlay was open. Overridden at higher specificity; the text caret alone now marks focus. (0.8.0's stripe removal was on the selected *row*, a different element.)
+
 ## 0.8.0
 
 Polished the `/` jump-to-heading overlay:

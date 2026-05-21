@@ -677,6 +677,14 @@ body:has(.letterpress-toc-crumb) .letterpress-width-slider {
 .letterpress-toc-overlay__input::placeholder {
   color: color-mix(in srgb, var(--vscode-editor-foreground) 40%, transparent);
 }
+/* VS Code's preview stylesheet sets `input:focus { outline: 1px solid
+   -webkit-focus-ring-color }` (specificity 0,1,1) — that's the amber ring, and
+   it outranks the plain `outline: none` above (0,1,0). Re-kill it at higher
+   specificity; the caret alone marks focus. */
+.letterpress-toc-overlay__input:focus,
+.letterpress-toc-overlay__input:focus-visible {
+  outline: none;
+}
 .letterpress-toc-overlay__list {
   overflow-y: auto;
   padding: 0.4em 0 0.6em;
