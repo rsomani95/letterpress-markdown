@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Letterpress TOC — redesign preview</title>
+<style>
+  /* Pull in the REAL shipped stylesheets so this preview reflects exactly what
+     the extension renders. Edits to ../styles/preview.css show up here on reload. */
+  @import url('../styles/fonts.css');
+  @import url('../styles/preview.css');
+
+  /* Stand in for the VS Code theme variables preview.css reads. These are the
+     macOS "rocinante" values (near-black bg, cool foreground, cyan accent). */
+  :root {
+    --vscode-editor-background: #0d1117;
+    --vscode-editor-foreground: #c0d0e0;
+    --vscode-textLink-foreground: #40c8d8;
+  }
+  html { background: var(--vscode-editor-background); }
+  body { color: color-mix(in srgb, var(--vscode-editor-foreground) 85%, transparent); }
+
+  /* ── A/B toggle: re-add the old serif echo (document-voice H1 + current crumb)
+        so you can feel it against the neutral default. Harness-only. ── */
+  body.serif-echo .letterpress-toc-item--h1 {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.18em;
+    color: color-mix(in srgb, var(--vscode-editor-foreground) 92%, transparent);
+  }
+  body.serif-echo .letterpress-toc-crumb__seg--current {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.25em;
+  }
+
+  /* ── Optional: reproduce the accidental row dividers (VS Code draws a border on
+        block <a>). Lets you confirm the `border: 0` fix. Harness-only. ── */
+  body.sim-vscode-border a.letterpress-toc-item {
+    border-bottom: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 9%, transparent);
+  }
+
+  /* ── Control panel (clearly tool UI, not part of the design) ── */
+  .ctl {
+    position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%);
+    z-index: 2000; display: flex; align-items: center; gap: 0.5em;
+    padding: 0.55em 0.9em; flex-wrap: wrap; justify-content: center;
+    max-width: calc(100vw - 2rem);
+    background: color-mix(in srgb, var(--vscode-editor-background) 75%, transparent);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 15%, transparent);
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: color-mix(in srgb, var(--vscode-editor-foreground) 55%, transparent);
+    user-select: none; -webkit-user-select: none;
+  }
+  .ctl__label { text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.6; }
+  .ctl__sep { width: 1px; height: 1.1em; background: color-mix(in srgb, var(--vscode-editor-foreground) 15%, transparent); }
+  .ctl button {
+    appearance: none; font: inherit; cursor: pointer;
+    background: none; color: inherit;
+    border: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 18%, transparent);
+    padding: 0.25em 0.7em; border-radius: 999px; transition: all 0.12s ease;
+  }
+  .ctl button:hover { color: var(--vscode-editor-foreground); border-color: color-mix(in srgb, var(--vscode-editor-foreground) 35%, transparent); }
+  .ctl button.is-on {
+    color: var(--vscode-textLink-foreground);
+    border-color: color-mix(in srgb, var(--vscode-textLink-foreground) 55%, transparent);
+    background: color-mix(in srgb, var(--vscode-textLink-foreground) 10%, transparent);
+  }
+  .ctl select {
+    appearance: none; font: inherit; cursor: pointer;
+    background: none; color: inherit;
+    border: 1px solid color-mix(in srgb, var(--vscode-editor-foreground) 18%, transparent);
+    padding: 0.25em 0.4em; border-radius: 6px; max-width: 12em;
+  }
+  .ctl select option { background: var(--vscode-editor-background); }
+</style>
+</head>
+<body>
+
+<!-- The document. Headings keep their serif voice (preview.css); the TOC below
+     is the new neutral navigation chrome — the contrast is the point. -->
+<h1>Adapter-eval review notes</h1>
+<p>A standing place for the notes we keep while reviewing adapter evaluations — what to read first, who owns which part, and the small rules that keep everything resolving.</p>
+
+<h2>Where things live</h2>
+<p>Reviews land in the shared drive; chips and their resolution state live in the tracker. This section is the map.</p>
+
+<h2>Division of labor — read this before you start</h2>
+<p>Two roles: the reader, who works through the doc, and the editor, who keeps the synthesis honest. They are deliberately separate.</p>
+
+<h2>The loop</h2>
+<p>Read, annotate, discuss, synthesize, repeat. The loop is short on purpose.</p>
+
+<h2>Reading &amp; discussing a review</h2>
+<p>Discussion happens against chips, not against prose. A chip is the unit of disagreement.</p>
+
+<h2>The chip vocabulary at a glance</h2>
+<p>A small controlled vocabulary so two reviewers mean the same thing by the same word.</p>
+
+<h2>Writing &amp; editing a review</h2>
+<p>The editor owns voice and structure; the reader owns claims. Keep them from blurring.</p>
+
+<h3>Authoring chips — the rules that keep them resolving</h3>
+<p>Every chip names a claim, a source, and a state. Without all three it cannot resolve.</p>
+
+<h4>Resolution order, step by step</h4>
+<p>Resolve the source first, then the claim, then the state. A demo of the fourth level of depth.</p>
+
+<h2>Worked example A — discuss one doc (from a pasted URL)</h2>
+<p>Start to finish on a single document, so the loop is concrete.</p>
+
+<h2>Worked example B — synthesize a whole run</h2>
+<p>Now the same moves across an entire evaluation run.</p>
+
+<h2>Pitfalls</h2>
+<p>The handful of ways this goes wrong, and how to back out of each.</p>
+
+<h2>See also</h2>
+<p>Adjacent notes worth keeping open in another tab.</p>
+
+<div class="ctl" id="ctl"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  // Mirror toc.js: collect headings from the document in order.
+  var headings = Array.prototype.map.call(
+    document.querySelectorAll('h1, h2, h3, h4'),
+    function (el, i) {
+      if (!el.id) el.id = 'h-' + i;
+      return { el: el, level: parseInt(el.tagName[1], 10), text: el.textContent.trim(), id: el.id };
+    }
+  );
+
+  var PATH_MAX_SEGMENTS = 3;
+  var current = 1;          // default "you are here" → "Where things live" (matches the breadcrumb screenshot)
+  var mode = 'rail';        // 'rail' | 'crumb' | 'overlay'
+  var crumbOpen = true;     // show the dropdown so its list is visible
+  var els = {};
+
+  function visible(maxDepth) {
+    return headings.filter(function (h) { return h.level <= (maxDepth || 3); });
+  }
+
+  // toc.js pathFor(): walk back to the nearest shallower heading at each step.
+  function pathFor(idx) {
+    if (idx < 0) return [];
+    var path = [headings[idx]];
+    for (var i = idx - 1; i >= 0; i--) {
+      if (headings[i].level < path[path.length - 1].level) path.push(headings[i]);
+      if (headings[i].level === 1) break;
+    }
+    return path.reverse();
+  }
+
+  function clearTOC() {
+    ['crumb', 'rail', 'overlay'].forEach(function (k) { if (els[k]) { els[k].remove(); els[k] = null; } });
+  }
+
+  // ── Breadcrumb (buildBreadcrumb + renderCrumbPath + renderCrumbMenu) ──
+  function buildCrumb() {
+    var crumb = document.createElement('div');
+    crumb.className = 'letterpress-toc-crumb' + (crumbOpen ? ' is-open' : '');
+    crumb.innerHTML =
+      '<button class="letterpress-toc-mode-toggle letterpress-toc-mode-toggle--to-rail" type="button" title="rail">≡</button>' +
+      '<div class="letterpress-toc-crumb__path"></div>' +
+      '<div class="letterpress-toc-crumb__menu"></div>';
+    crumb.addEventListener('click', function () { crumbOpen = !crumbOpen; crumb.classList.toggle('is-open', crumbOpen); });
+
+    var pathEl = crumb.querySelector('.letterpress-toc-crumb__path');
+    var path = pathFor(current);
+    var displayed = path.length > PATH_MAX_SEGMENTS ? path.slice(-PATH_MAX_SEGMENTS) : path;
+    displayed.forEach(function (h, i) {
+      if (i > 0) {
+        var sep = document.createElement('span');
+        sep.className = 'letterpress-toc-crumb__sep'; sep.textContent = '›';
+        pathEl.appendChild(sep);
+      }
+      var isCurrent = i === displayed.length - 1;
+      var seg = document.createElement('span');
+      seg.className = 'letterpress-toc-crumb__seg ' + (isCurrent ? 'letterpress-toc-crumb__seg--current' : 'letterpress-toc-crumb__seg--ancestor');
+      seg.textContent = h.text;
+      if (isCurrent) {
+        var chev = document.createElement('span');
+        chev.className = 'letterpress-toc-crumb__chevron'; chev.textContent = '▾';
+        seg.appendChild(chev);
+      }
+      pathEl.appendChild(seg);
+    });
+
+    var menu = crumb.querySelector('.letterpress-toc-crumb__menu');
+    visible(3).forEach(function (h) {
+      var a = document.createElement('a');
+      a.className = 'letterpress-toc-item letterpress-toc-item--h' + h.level + (headings.indexOf(h) === current ? ' is-current' : '');
+      a.textContent = h.text; a.href = '#' + h.id;
+      menu.appendChild(a);
+    });
+
+    document.body.appendChild(crumb);
+    els.crumb = crumb;
+  }
+
+  // ── Rail (buildRail) ──
+  function buildRail() {
+    var rail = document.createElement('aside');
+    rail.className = 'letterpress-toc-rail';
+    rail.setAttribute('data-side', 'right');
+    rail.innerHTML =
+      '<div class="letterpress-toc-rail__head"><span>Contents</span>' +
+        '<span class="letterpress-toc-rail__actions">' +
+          '<button class="letterpress-toc-mode-toggle letterpress-toc-mode-toggle--to-crumb" type="button">≡</button>' +
+          '<button class="letterpress-toc-rail-flip" type="button">⇄</button>' +
+        '</span></div>' +
+      '<div class="letterpress-toc-rail__list"></div>';
+    var list = rail.querySelector('.letterpress-toc-rail__list');
+    visible(3).forEach(function (h) {
+      var a = document.createElement('a');
+      a.className = 'letterpress-toc-item letterpress-toc-item--h' + h.level + (headings.indexOf(h) === current ? ' is-current' : '');
+      a.textContent = h.text; a.href = '#' + h.id;
+      list.appendChild(a);
+    });
+    document.body.appendChild(rail);
+    els.rail = rail;
+  }
+
+  // ── Overlay (buildOverlay + renderOverlayList) ──
+  function buildOverlay() {
+    var overlay = document.createElement('div');
+    overlay.className = 'letterpress-toc-overlay is-open';
+    overlay.innerHTML =
+      '<div class="letterpress-toc-overlay__panel">' +
+        '<input class="letterpress-toc-overlay__input" type="text" placeholder="Jump to heading…" autocomplete="off" spellcheck="false">' +
+        '<div class="letterpress-toc-overlay__list"></div>' +
+      '</div>';
+    var list = overlay.querySelector('.letterpress-toc-overlay__list');
+    var items = visible(4);                      // overlay reaches one level deeper
+    items.forEach(function (h, i) {
+      var row = document.createElement('div');
+      row.className = 'letterpress-toc-item letterpress-toc-item--h' + h.level + (i === current ? ' is-active' : '');
+      row.textContent = h.text;
+      list.appendChild(row);
+    });
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) { mode = 'rail'; render(); } });
+    document.body.appendChild(overlay);
+    els.overlay = overlay;
+  }
+
+  function render() {
+    clearTOC();
+    if (mode === 'rail') buildRail();
+    else if (mode === 'crumb') buildCrumb();
+    else if (mode === 'overlay') buildOverlay();
+    syncCtl();
+  }
+
+  // ── Control panel ──
+  var ctl = document.getElementById('ctl');
+  function btn(label, on, fn) {
+    var b = document.createElement('button');
+    b.textContent = label; if (on) b.classList.add('is-on');
+    b.addEventListener('click', function (e) { e.stopPropagation(); fn(); });
+    return b;
+  }
+  function sep() { var s = document.createElement('span'); s.className = 'ctl__sep'; return s; }
+  function label(t) { var s = document.createElement('span'); s.className = 'ctl__label'; s.textContent = t; return s; }
+
+  function syncCtl() {
+    ctl.innerHTML = '';
+    ctl.appendChild(label('mode'));
+    ctl.appendChild(btn('Rail', mode === 'rail', function () { mode = 'rail'; render(); }));
+    ctl.appendChild(btn('Breadcrumb', mode === 'crumb', function () { mode = 'crumb'; crumbOpen = true; render(); }));
+    ctl.appendChild(btn('Overlay', mode === 'overlay', function () { mode = 'overlay'; render(); }));
+
+    ctl.appendChild(sep());
+    ctl.appendChild(label('current'));
+    var sel = document.createElement('select');
+    visible(4).forEach(function (h) {
+      var o = document.createElement('option');
+      var i = headings.indexOf(h);
+      o.value = String(i);
+      o.textContent = '  '.repeat(h.level - 1) + h.text;
+      if (i === current) o.selected = true;
+      sel.appendChild(o);
+    });
+    sel.addEventListener('change', function () { current = parseInt(sel.value, 10); render(); });
+    sel.addEventListener('click', function (e) { e.stopPropagation(); });
+    ctl.appendChild(sel);
+
+    ctl.appendChild(sep());
+    ctl.appendChild(label('compare'));
+    ctl.appendChild(btn('Serif echo', document.body.classList.contains('serif-echo'), function () { document.body.classList.toggle('serif-echo'); syncCtl(); }));
+    ctl.appendChild(btn('VS Code row borders', document.body.classList.contains('sim-vscode-border'), function () { document.body.classList.toggle('sim-vscode-border'); syncCtl(); }));
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>

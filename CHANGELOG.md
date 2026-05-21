@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.9.0
+
+Unified the table-of-contents typography across all three surfaces (rail, breadcrumb dropdown, and the `/` overlay) into one design language. They had drifted apart — the rail and dropdown used the document's serif-italic H1 plus four font-sizes and opacity-as-depth, while the overlay was already flat — so the same heading looked like three different things.
+
+- **One neutral system, shared by all three.** A single set of `--lp-toc-*` tokens (row padding + indent step) drives every surface. One face (Inter), one size per surface; the *document* keeps its serif heading voice, but the TOC is now quiet navigation chrome.
+- **Depth reads from indentation + a gentle weight/tone step** (H1 600/88% → H4 400/48%) instead of four shrinking sizes with opacity bottoming out at 40%. Every level stays legible. The rail tightens the indent ramp for its 200px column by overriding one token, not with a separate set of rules.
+- **Removed the accidental row dividers.** The rail and dropdown rows are `<a>` elements and were inheriting a full-width border from VS Code's built-in preview stylesheet; the overlay's `<div>` rows never had it. `border: 0` on the item base removes them, so all three match the overlay's clean look.
+- **One state language.** "You are here" (`is-current`) is accent text + a 2px accent bar + a faint tint everywhere it appears; the overlay's keyboard cursor (`is-active`) is a stronger fill with no bar — a deliberate split between a persistent location and a transient selection.
+- **Breadcrumb bar:** the current segment is now accent + semibold at the same size as its ancestors, so the bar stays one balanced line (it previously borrowed the serif italic at 1.25em, which unbalanced the bar and shifted its baseline).
+
 ## 0.8.2
 
 - **Emacs-style navigation in the `/` overlay.** `Ctrl+N` / `Ctrl+P` move the cursor down / up, mirroring `↓` / `↑`. The combos are suppressed from bubbling so `Ctrl+N` doesn't also trigger VS Code's "New File".

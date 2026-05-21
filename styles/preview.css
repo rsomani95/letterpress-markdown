@@ -5,6 +5,15 @@
 :root {
   --rhythm: 1.5rem;
   --letterpress-width: 720px;
+
+  /* ── TOC hierarchy system (shared by rail, breadcrumb dropdown, overlay) ──
+     One typeface, one size per surface. Depth is carried by indentation
+     (primary) plus a gentle weight/tone step (secondary). These tokens are the
+     single knob: each surface inherits them and may tighten the indent for its
+     own width. */
+  --lp-toc-pad-x: 1em;      /* row horizontal padding == first-level indent */
+  --lp-toc-indent: 1.05em;  /* added per level of depth */
+  --lp-toc-row-py: 0.3em;   /* row vertical padding */
 }
 
 /* ── Layout ── */
@@ -377,58 +386,74 @@ em {
  * in-UI "switch" button; preference is stored in localStorage.
  * `/` opens an always-available fuzzy overlay regardless of mode. */
 
-/* ── Shared item styling: typography mirrors the document hierarchy ── */
+/* ── Shared item styling: one neutral system across rail, dropdown & overlay ──
+   The document's headings keep their serif voice; the TOC is quiet navigation
+   chrome — one face (Inter), one size per surface, depth by indent + tone. */
 
 .letterpress-toc-item {
   display: block;
-  padding: 0.25em 1em;
-  color: color-mix(in srgb, var(--vscode-editor-foreground) 70%, transparent);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.45;
+  padding: var(--lp-toc-row-py) var(--lp-toc-pad-x);
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 74%, transparent);
   text-decoration: none;
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   transition: background 0.12s ease, color 0.12s ease;
+  /* Reset all borders, then re-add only the transparent state bar. The rail and
+     dropdown rows are <a> elements; VS Code's preview stylesheet draws a border
+     on block anchors, which is what put a full-width rule under every row. The
+     overlay's rows are <div> and never had it — `border: 0` makes all three match. */
+  border: 0;
   border-left: 2px solid transparent;
 }
 .letterpress-toc-item:hover {
   color: var(--vscode-editor-foreground);
   background: color-mix(in srgb, var(--vscode-editor-foreground) 6%, transparent);
 }
+/* "You are here" — the section currently in view. One treatment everywhere it
+   can appear (rail, dropdown, and the overlay on open). */
 .letterpress-toc-item.is-current {
   color: var(--vscode-textLink-foreground, var(--vscode-editor-foreground));
   background: color-mix(in srgb, var(--vscode-textLink-foreground, var(--vscode-editor-foreground)) 8%, transparent);
+  border-left-color: var(--vscode-textLink-foreground, var(--vscode-editor-foreground));
 }
+/* The overlay's keyboard cursor — a transient selection, distinct from
+   "you are here." Stronger fill marks it; no bar (the fill is the cursor). */
 .letterpress-toc-item.is-active {
-  /* The highlighted background alone is the cursor — no left-edge accent bar. */
+  color: var(--vscode-editor-foreground);
   background: color-mix(in srgb, var(--vscode-textLink-foreground, var(--vscode-editor-foreground)) 16%, transparent);
 }
+
+/* Depth = indentation (primary) + a gentle weight & tone step (secondary).
+   Same face, same size at every level; every level stays legible. The indent
+   ramp is a single token so a surface can tighten it without changing the
+   system. */
 .letterpress-toc-item--h1 {
-  font-family: 'Instrument Serif', Georgia, serif;
-  font-style: italic;
-  font-size: 1.15em;
-  color: color-mix(in srgb, var(--vscode-editor-foreground) 92%, transparent);
-  padding-left: 1em;
-  margin-top: 0.55em;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 88%, transparent);
+  padding-left: var(--lp-toc-pad-x);
+  margin-top: 0.5em;
 }
-.letterpress-toc-item--h1:first-child { margin-top: 0.3em; }
+.letterpress-toc-item--h1:first-child { margin-top: 0.25em; }
 .letterpress-toc-item--h2 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 500;
-  padding-left: 1.8em;
-  font-size: 0.95em;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 74%, transparent);
+  padding-left: calc(var(--lp-toc-pad-x) + var(--lp-toc-indent));
 }
 .letterpress-toc-item--h3 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  padding-left: 2.8em;
-  font-size: 0.9em;
-  color: color-mix(in srgb, var(--vscode-editor-foreground) 55%, transparent);
+  font-weight: 450;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 60%, transparent);
+  padding-left: calc(var(--lp-toc-pad-x) + 2 * var(--lp-toc-indent));
 }
 .letterpress-toc-item--h4 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  padding-left: 3.8em;
-  font-size: 0.85em;
-  color: color-mix(in srgb, var(--vscode-editor-foreground) 40%, transparent);
+  font-weight: 400;
+  color: color-mix(in srgb, var(--vscode-editor-foreground) 48%, transparent);
+  padding-left: calc(var(--lp-toc-pad-x) + 3 * var(--lp-toc-indent));
 }
 
 /* ── Breadcrumb ── */
@@ -440,7 +465,7 @@ em {
   right: 0;
   z-index: 12;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.6em;
   background: color-mix(in srgb, var(--vscode-editor-background) 88%, transparent);
   backdrop-filter: blur(10px);
@@ -471,7 +496,7 @@ body:has(.letterpress-toc-crumb) .letterpress-width-slider {
 
 .letterpress-toc-crumb__path {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.4em;
   flex: 1;
   overflow: hidden;
@@ -485,11 +510,13 @@ body:has(.letterpress-toc-crumb) .letterpress-width-slider {
 .letterpress-toc-crumb__seg--ancestor:hover {
   color: var(--vscode-editor-foreground);
 }
+/* The current segment is the one the eye should land on: accent colour +
+   semibold at the same size as the ancestors, so the bar stays one balanced
+   line. (Earlier it borrowed the document's serif italic at 1.25em — that
+   echoed the prose but unbalanced the bar and shifted its baseline.) */
 .letterpress-toc-crumb__seg--current {
   color: var(--vscode-textLink-foreground, var(--vscode-editor-foreground));
-  font-style: italic;
-  font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif;
-  font-size: 1.25em;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -539,6 +566,11 @@ body:has(.letterpress-toc-crumb) .letterpress-width-slider {
   bottom: 5rem;
   width: 200px;
   overflow-y: auto;
+  /* Same hierarchy system as the dropdown and overlay, with a tighter indent
+     ramp to fit the 200px column. One knob, not a separate dialect. */
+  --lp-toc-pad-x: 0.6em;
+  --lp-toc-indent: 0.85em;
+  --lp-toc-row-py: 0.2em;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 12px;
   line-height: 1.5;
@@ -624,18 +656,8 @@ body:has(.letterpress-toc-crumb) .letterpress-width-slider {
 }
 .letterpress-toc-rail-flip:hover { opacity: 1; }
 
-/* Rail-specific item indents (tighter than the menu version). */
-.letterpress-toc-rail .letterpress-toc-item--h1 {
-  padding-left: 0.6em;
-  margin-top: 0.5em;
-}
-.letterpress-toc-rail .letterpress-toc-item--h2 { padding-left: 1.6em; }
-.letterpress-toc-rail .letterpress-toc-item--h3 { padding-left: 2.4em; }
-.letterpress-toc-rail .letterpress-toc-item--h4 { padding-left: 3.2em; }
-
-.letterpress-toc-rail .letterpress-toc-item.is-current {
-  border-left-color: var(--vscode-textLink-foreground, var(--vscode-editor-foreground));
-}
+/* Rail indents and the "you are here" bar now come from the shared system
+   above (driven by the rail's own --lp-toc-* token overrides). */
 
 /* ── Overlay (always available via `/`) ── */
 
@@ -685,23 +707,15 @@ body:has(.letterpress-toc-crumb) .letterpress-width-slider {
 .letterpress-toc-overlay__input:focus-visible {
   outline: none;
 }
+/* The overlay uses the same hierarchy system as the rail and dropdown — its own
+   indent ramp (a touch roomier, since it has the width) and a slightly larger
+   reading size. It reaches one level deeper (H1–H4) and is the only surface with
+   a keyboard cursor (.is-active). */
 .letterpress-toc-overlay__list {
   overflow-y: auto;
   padding: 0.4em 0 0.6em;
+  font-size: 15px;
+  --lp-toc-pad-x: 1.2em;
+  --lp-toc-indent: 1.05em;
+  --lp-toc-row-py: 0.34em;
 }
-/* In the overlay, structure reads from indentation alone: one sans-serif face,
-   one size, one color — no display type, no per-level sizing. Unlike the rail /
-   breadcrumb (which mirror the document's heading fonts), this flat fuzzy-finder
-   list is scanned by indent depth. */
-.letterpress-toc-overlay .letterpress-toc-item {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 0.95em;
-  color: color-mix(in srgb, var(--vscode-editor-foreground) 82%, transparent);
-  margin-top: 0;
-}
-.letterpress-toc-overlay .letterpress-toc-item--h1 { padding-left: 1.2em; }
-.letterpress-toc-overlay .letterpress-toc-item--h2 { padding-left: 2.2em; }
-.letterpress-toc-overlay .letterpress-toc-item--h3 { padding-left: 3.2em; }
-.letterpress-toc-overlay .letterpress-toc-item--h4 { padding-left: 4.2em; }
