@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.0
+
+Polished the `/` jump-to-heading overlay:
+
+- **Opens where you are.** The cursor now starts on the heading for the section you're currently reading (and scrolls it into view) instead of always resetting to the top. Typing to filter still snaps the cursor back to the first match.
+- **No accent bar on the cursor.** Dropped the left-edge stripe on the selected row — the highlighted background alone marks the cursor.
+- **Flat, sans-serif list.** The overlay no longer borrows the document's heading fonts (serif H1, varied sizes). Every entry is one sans-serif face at one size; hierarchy reads from indentation alone. The rail and breadcrumb still mirror the document's heading typography.
+
 ## 0.7.2
 
 - Added `s` as a hotkey to flip the rail to the other margin (left ⇄ right) — the keyboard equivalent of the `⇄` control. Active while the rail is showing.

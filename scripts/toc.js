@@ -378,15 +378,29 @@
       });
       list.appendChild(row);
     });
+    // Keep the cursor visible — on open (current section may be far down) and
+    // while arrowing past the fold.
+    var activeRow = list.children[overlayActive];
+    if (activeRow) activeRow.scrollIntoView({ block: 'nearest' });
+  }
+
+  // Where the cursor should land when the overlay first opens: the heading for
+  // the section we're currently reading, so `/` reflects where you are rather
+  // than always starting at the top. Falls back to the first item.
+  function overlayActiveForCurrent() {
+    if (currentIdx < 0) return 0;
+    var i = visibleHeadings(MAX_DEPTH + 1).indexOf(headings[currentIdx]);
+    return i < 0 ? 0 : i;
   }
 
   function openOverlay() {
     if (!elements.overlay) buildOverlay();
-    overlayActive = 0;
     var input = elements.overlay.querySelector('.letterpress-toc-overlay__input');
     input.value = '';
-    renderOverlayList();
+    overlayActive = overlayActiveForCurrent();
+    // Show before rendering so the active row can scrollIntoView with layout.
     elements.overlay.classList.add('is-open');
+    renderOverlayList();
     setTimeout(function () { input.focus(); }, 0);
   }
 
