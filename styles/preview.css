@@ -239,6 +239,109 @@ li > ul, li > ol {
   margin-bottom: 0;
 }
 
+/* ── Task lists ──
+ * GFM task lists are rendered by the `bierner.markdown-checkbox` extension,
+ * which emits, per item:
+ *   <li class="task-list-item">
+ *     <input class="task-list-item-checkbox" type="checkbox">   (+ checked when done)
+ *     <label class="task-list-item-label">…text…</label>
+ *   </li>
+ * Nothing in the stack styles the box, so the raw OS checkbox shows through. We
+ * draw our own: a rounded box that hangs in a left gutter (so wrapped lines hang
+ * to a clean text column instead of a ragged left edge), tinted with the theme
+ * accent when checked. The accent is --vscode-textLink-foreground — cyan on
+ * macOS, amber/copper on the Linux hosts — so the boxes follow the per-host
+ * palette.
+ *
+ * Checkbox selectors carry the [type] attribute to lift their specificity to
+ * (0,2,1), one notch above the GitHub-styles sheet's
+ * `.github-markdown-body .task-list-item-checkbox` (0,2,0), so our look wins
+ * regardless of stylesheet load order.
+ *
+ * These are *display-only*. VS Code's markdown preview is a one-way render of
+ * the source, and a contributed script (all this extension is) has no channel
+ * to write back to the document — so clicking a box can't toggle the file. The
+ * boxes mirror the source's `[ ]` / `[x]` and carry no click affordance (no
+ * pointer cursor, no hover, pointer-events: none) so they don't imply an action
+ * that can't happen. Toggle a task by editing the source. */
+
+ul.contains-task-list,
+ol.contains-task-list {
+  padding-left: 0;
+}
+
+/* Selector is `.contains-task-list li.task-list-item` (0,2,1), one notch above
+   markdown-checkbox's own `.contains-task-list .task-list-item { padding-left:0 }`
+   (0,2,0) — otherwise that rule collapses the gutter. The padding is the label's
+   text column; the checkbox hangs back into it via a negative margin (below), so
+   wrapped lines align under the first line instead of a ragged left edge. */
+.contains-task-list li.task-list-item {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 1.8em;
+}
+
+/* The box. `appearance: none` makes the <input> a normal styleable element in
+   Chromium (the engine the VS Code webview runs on), so border/background and a
+   ::after checkmark all render. The checkbox stays *in normal flow* (an inline
+   box) and hangs into the gutter with a negative left margin — GitHub's task-list
+   technique — which gives the clean hanging indent. `font: inherit` sizes the em
+   box against the 16px body rather than the input's own default font; the right
+   margin lands the following text at the 1.8em column so it lines up with the
+   wrapped lines. `cursor: default` + `pointer-events: none` keep it honestly
+   inert (display-only — see the section note above). */
+input.task-list-item-checkbox[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  width: 1.05em;
+  height: 1.05em;
+  margin: 0 0.75em 0 -1.8em;
+  padding: 0;
+  vertical-align: -0.2em;
+  font: inherit;
+  line-height: 1;
+  display: inline-grid;
+  place-content: center;
+  border: 1.5px solid color-mix(in srgb, var(--vscode-editor-foreground) 30%, transparent);
+  border-radius: 4px;
+  background: transparent;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Checkmark: an L of right + bottom borders rotated 45°, drawn in the accent.
+   Shown only when the source marks the item `[x]`; the small lift optically
+   centers it in the box. */
+input.task-list-item-checkbox[type="checkbox"]::after {
+  content: "";
+  width: 0.3em;
+  height: 0.56em;
+  border: solid var(--vscode-textLink-foreground, var(--vscode-editor-foreground));
+  border-width: 0 0.12em 0.12em 0;
+  transform: translateY(-0.05em) rotate(45deg);
+  opacity: 0;
+}
+
+/* Checked (driven by the source, not by interaction): faint accent tint + accent
+   border, checkmark revealed. */
+input.task-list-item-checkbox[type="checkbox"]:checked {
+  background: color-mix(in srgb, var(--vscode-textLink-foreground, var(--vscode-editor-foreground)) 14%, transparent);
+  border-color: color-mix(in srgb, var(--vscode-textLink-foreground, var(--vscode-editor-foreground)) 55%, transparent);
+}
+input.task-list-item-checkbox[type="checkbox"]:checked::after {
+  opacity: 1;
+}
+
+/* Done text recedes: a uniform fade (opacity dims inline code & strong too, not
+   just bare prose) plus a hairline strike. */
+input.task-list-item-checkbox[type="checkbox"]:checked + .task-list-item-label {
+  opacity: 0.5;
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--vscode-editor-foreground) 35%, transparent);
+  text-decoration-thickness: 1px;
+}
+
 /* ── Strong and emphasis ── */
 
 strong {

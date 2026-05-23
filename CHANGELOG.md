@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.10.0
+
+Styled GFM task lists (`- [ ]` / `- [x]`), rendered by the `bierner.markdown-checkbox` companion extension. Previously unstyled, so the raw OS checkbox showed through and wrapped lines fell back to a ragged left edge.
+
+- **A drawn box, not the native control.** Each checkbox is a rounded square that hangs in a left gutter, with the text in a clean hanging-indent column so wrapped lines align under the first line instead of under the box. When the source marks an item `[x]`, its box fills with a faint accent tint, an accent border, and an accent checkmark.
+- **Accent follows the host.** The box and checkmark read from `--vscode-textLink-foreground`, so they're cyan on macOS and amber/copper on the Linux hosts — same color-as-context as the rest of the stack.
+- **Done items recede.** A completed item's text fades to ~50% (dimming inline code and bold along with the prose) and gets a hairline strikethrough.
+- **Display-only, and honest about it.** VS Code's markdown preview is a one-way render of the source — a contributed extension can't write back to the document, so clicking a box can't toggle the file. The boxes mirror the source's `[ ]`/`[x]` and deliberately carry no click affordance (no pointer cursor, no hover). Toggle a task by editing the markdown; the preview follows. (Selectors sit one specificity notch above the GitHub-styles sheet so the look wins regardless of stylesheet load order.)
+
 ## 0.9.0
 
 Unified the table-of-contents typography across all three surfaces (rail, breadcrumb dropdown, and the `/` overlay) into one design language. They had drifted apart — the rail and dropdown used the document's serif-italic H1 plus four font-sizes and opacity-as-depth, while the overlay was already flat — so the same heading looked like three different things.
