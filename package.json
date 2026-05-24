@@ -18,7 +18,8 @@
     "preview",
     "typography",
     "word-count",
-    "fold"
+    "fold",
+    "table-of-contents"
   ],
   "repository": {
     "type": "git",
