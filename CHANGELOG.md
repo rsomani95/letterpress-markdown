@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.0
+
+First marketplace release.
+
+- **Task-list styling works out of the box now.** The companion `bierner.markdown-checkbox` extension — which renders the GFM checkboxes this extension styles (added in 0.10.0) — is now declared in `extensionPack`, so installing Letterpress installs it automatically. Previously you had to know to add it yourself, and without it the styled task lists never appeared.
+
 ## 0.10.0
 
 Styled GFM task lists (`- [ ]` / `- [x]`), rendered by the `bierner.markdown-checkbox` companion extension. Previously unstyled, so the raw OS checkbox showed through and wrapped lines fell back to a ragged left edge.

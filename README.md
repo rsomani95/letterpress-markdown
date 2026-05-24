@@ -8,7 +8,9 @@ A VSCode extension for typographically refined markdown preview and a calmer edi
 
 **Width slider** — Press `w` anywhere in the preview to summon a floating slider; `w` again or `Esc` dismisses it. Resize the column live, anywhere from 480 to 1280px. The chosen width is remembered per-document, so each file restores its own preference — even across projects. New documents inherit the last-used value. Click "reset" to return to 720px. The slider stays out of the way until you call it up; your width still applies while it's hidden.
 
-**Color swatches** — Inline `` `#hex` `` codes get a small filled circle prefix showing the actual color, matching the editor's built-in color decorator. Supports 3/4/6/8-digit hex; block code is left alone.
+**Color swatches** — Inline `` `#rrggbb` `` codes get a small filled circle prefix showing the actual color, matching the editor's built-in color decorator. Six-digit hex only (shorter forms misfire on references like `#109`); block code is left alone.
+
+**Task lists** — GFM task lists (`- [ ]` / `- [x]`) render as drawn checkboxes in a left gutter, with wrapped lines hanging-indented so they align under the text rather than the box. Checked items fill with a faint accent tint and an accent checkmark, and their text recedes (dimmed, with a hairline strikethrough); the accent follows the active theme. The boxes are display-only — VS Code's markdown preview is a one-way render, so toggle a task by editing the source and the preview follows. The styling rides on the bundled `bierner.markdown-checkbox` companion, which this extension's pack installs for you.
 
 **Table of contents** — Two modes. Toggle between them by pressing `t`, or with the `≡` control in the rail header / breadcrumb bar; your choice is remembered across documents and projects:
 - *Rail* (default): a faded vertical list in the side margin. Brightens on hover. Sits on the right by default; flip sides with `s` or the `⇄` control in its header — the side also persists. Falls back to the breadcrumb automatically when the window is too narrow to fit it.
@@ -35,41 +37,33 @@ Everything adjustable lives *in* the preview as a keypress or a small control �
 
 ## Installation
 
-### From a local checkout (development)
+Install **Letterpress Markdown** from the VS Code Marketplace (or Open VSX for Cursor / VSCodium / Windsurf), then reload the window. The companion `bierner.markdown-checkbox` is pulled in automatically via the extension pack — it renders the task-list checkboxes this extension styles.
 
-Symlink into VSCode's extension directory — fast iteration loop, edits to CSS or scripts show up after "Markdown: Refresh Preview":
+**Disable `bierner.markdown-preview-github-styles`** if you have it — it targets the same preview styling surface and will conflict. Other Bierner markdown extensions (emoji, footnotes, mermaid, etc.) are fine.
 
-```bash
-ln -sfn /path/to/vscode-themes/letterpress-markdown \
-  ~/.vscode/extensions/rsomani95.letterpress-markdown-0.1.0
-```
+### From a `.vsix` (pre-publish or offline install)
 
-### From a `.vsix` (production-style install)
-
-Build the package once with `npm run package`, then install:
+Build the package once with `npm run package`, then install (match the version in `package.json`):
 
 ```bash
-code --install-extension dist-vsix/letterpress-markdown-0.1.0.vsix
+code --install-extension dist-vsix/letterpress-markdown-<version>.vsix
 ```
 
 For Remote-SSH hosts, install on the remote with:
 
 ```bash
-code --install-extension dist-vsix/letterpress-markdown-0.1.0.vsix --remote ssh-remote+<host>
+code --install-extension dist-vsix/letterpress-markdown-<version>.vsix --remote ssh-remote+<host>
 ```
 
 Then reload VSCode (Cmd+Shift+P → "Developer: Reload Window").
 
-**Disable `bierner.markdown-preview-github-styles`** — it targets the same preview styling surface and will conflict. Other Bierner markdown extensions (emoji, footnotes, mermaid, etc.) are fine.
-
 ## How It Works on SSH Remotes
 
-The extension is declared as `extensionKind: ["ui", "workspace"]`, so VS Code will load it in whichever extension host opens the markdown file:
+The extension is declared as `extensionKind: ["workspace"]`, so VS Code loads it in the extension host that *owns the file* — the local host for local files, and the remote (workspace) host for files opened over Remote-SSH, alongside VS Code's built-in `vscode.markdown-language-features`.
 
-- **Local files** → loaded in the local (UI) extension host.
-- **Remote files over SSH** → loaded in the remote (workspace) extension host, alongside VS Code's built-in `vscode.markdown-language-features`.
+This matters because VS Code's markdown preview is rendered by the host that owns the file. The `markdown.previewStyles` and `markdown.previewScripts` contributions only take effect if the extension is present in that host, so for remote files the extension must run on the remote.
 
-The reason both are needed: VS Code's markdown preview is rendered by the same extension host that opens the file. For our `markdown.previewStyles` and `markdown.previewScripts` contributions to take effect on remote files, our extension must be present on the remote.
+> An earlier `["ui", "workspace"]` declaration broke this: with both hosts eligible, VS Code preferred the local install, so the CSS/JS sat on the local machine while the preview was rendered by the remote server — and the styling silently dropped. Workspace-only guarantees the extension runs wherever the file lives. (See CHANGELOG 0.2.1.)
 
 **Once installed from the marketplace**, VS Code handles this automatically. If you want it auto-installed on every Remote-SSH host you connect to, add to your user `settings.json`:
 
@@ -79,7 +73,7 @@ The reason both are needed: VS Code's markdown preview is rendered by the same e
 ]
 ```
 
-For pre-publish development, install the `.vsix` directly on the remote: `code --install-extension letterpress-markdown-0.1.0.vsix --remote ssh-remote+<host>`.
+For pre-publish development, install the `.vsix` directly on the remote: `code --install-extension letterpress-markdown-<version>.vsix --remote ssh-remote+<host>`.
 
 ## Disabling / Falling Back to Default Markdown
 
@@ -142,132 +136,10 @@ Your explicit settings always override the extension's `configurationDefaults`.
 
 ## Fonts
 
-The extension bundles **Instrument Serif Italic** (~64KB TTF) for headings, loaded via `@font-face` in the preview webview. **Inter** and **JetBrains Mono** are referenced by name with system fallbacks — they should already be installed on your system.
+The extension bundles all three typefaces it uses — **Inter** (body), **Instrument Serif Italic** (headings), and **JetBrains Mono** (code) — and loads them via `@font-face` in the preview webview, so the preview looks identical on every machine regardless of what's installed locally. All three are under the SIL Open Font License; see [`CREDITS.md`](CREDITS.md).
 
-If Instrument Serif doesn't render (you'll see Georgia as the fallback), the bundled font may not be loading. Check that the symlink is intact and the `fonts/` directory contains the TTF.
+If headings fall back to a generic serif (Georgia) instead of Instrument Serif, the bundled font isn't loading — confirm the `fonts/` directory shipped with the extension (it shouldn't be excluded by `.vscodeignore`).
 
-## Publishing to the Marketplace
+## Contributing
 
-One-time setup:
-
-1. **Register publisher `rsomani95`** at https://marketplace.visualstudio.com/manage. The ID must match `package.json`'s `publisher` field.
-2. **Generate a Personal Access Token (PAT)** in your Azure DevOps organization with the `Marketplace > Manage` scope (Azure DevOps is the auth backend the marketplace uses; you don't have to use it for anything else). Save it durably — you'll need it for every login.
-3. **Replace the placeholder `icon.png`** with the final design (256×256 PNG recommended). The current one is a leftover serif "R" from before the rename to Letterpress — needs replacement.
-
-Per-release flow, run from `vscode-themes/letterpress-markdown/`:
-
-```bash
-# Bump the version — also creates a git commit + tag
-npm version patch                 # 0.1.0 → 0.1.1, or use minor / major
-
-# Update the changelog for the new version, commit
-$EDITOR CHANGELOG.md
-git commit -am "letterpress-markdown $(jq -r .version package.json) changelog"
-
-# First time only — paste the PAT when prompted
-npx vsce login rsomani95
-
-# Publish (this runs vscode:prepublish → tsc, then packages and uploads)
-npm run publish
-```
-
-A few minutes after publishing, the extension is live at `https://marketplace.visualstudio.com/items?itemName=rsomani95.letterpress-markdown`.
-
-### Pre-release versions
-
-For experimental drops, use `npx vsce publish --pre-release`. Pre-release versions show up in a separate marketplace slot; users opt in via "Switch to Pre-Release Version" in the extension page.
-
-### What changes after publish
-
-The `home.activation.installLetterpressMarkdown` hook in `home.nix` was built to side-load this extension before it existed on the marketplace. Once it's published, you have two cleaner options:
-
-1. **Auto-install on Remote-SSH connect.** Add to your VS Code user `settings.json`:
-
-   ```json
-   "remote.SSH.defaultExtensions": [
-     "rsomani95.letterpress-markdown"
-   ]
-   ```
-
-   VS Code will auto-install on every Remote-SSH host you connect to.
-
-2. **One-shot install on existing remotes:** `code --install-extension rsomani95.letterpress-markdown --remote ssh-remote+<host>`.
-
-The home-manager activation hook can stay as a safety net (it's idempotent) or be removed once you're confident the marketplace path is the canonical one.
-
-### Optional: GitHub Actions release pipeline
-
-For tag-based publishing:
-
-```yaml
-name: Publish Extension
-on:
-  push:
-    tags: ["letterpress-markdown-v*"]
-jobs:
-  publish:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: vscode-themes/letterpress-markdown
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
-      - run: npm ci
-      - run: npx vsce publish -p ${{ secrets.VSCE_PAT }}
-```
-
-Store the PAT as the repo secret `VSCE_PAT`.
-
-## Development
-
-### Iterating on preview CSS
-
-Edit `styles/preview.css`, then Cmd+Shift+P → "Markdown: Refresh Preview". No reload needed — CSS changes are picked up immediately.
-
-### Iterating on the word counter
-
-```bash
-npm run build    # compiles src/extension.ts → dist/extension.js
-```
-
-Then reload VSCode window (Cmd+Shift+P → "Developer: Reload Window"). TypeScript changes require a full reload.
-
-### Architecture
-
-The extension contributes through two independent mechanisms:
-
-| Concern | Mechanism | Runs where |
-|---------|-----------|------------|
-| Preview CSS | `markdown.previewStyles` in package.json → CSS files injected into preview webview | Local (UI) |
-| Word counter | `main` entry point → StatusBarItem via VSCode API | Local (UI) |
-| Editor defaults | `configurationDefaults` in package.json → `[markdown]` settings | Local (UI) |
-
-All three are purely client-side. The extension never touches the remote filesystem or runs code on a remote host.
-
-### Theme-agnostic color strategy
-
-No colors are hardcoded. All text colors use `color-mix()` to apply opacity to the active theme's `--vscode-editor-foreground`:
-
-```css
-color: color-mix(in srgb, var(--vscode-editor-foreground) 85%, transparent);
-```
-
-This means the extension adapts to any light or dark theme automatically. `color-mix()` requires Chromium 111+; VSCode 1.80+ satisfies this.
-
-### Files
-
-```
-├── package.json              # Extension manifest
-├── tsconfig.json
-├── styles/
-│   ├── fonts.css             # @font-face for Instrument Serif
-│   └── preview.css           # Layout, typography, spacing, hierarchy
-├── fonts/
-│   └── InstrumentSerif-Italic.ttf
-├── src/
-│   └── extension.ts          # Word counter source
-└── dist/
-    └── extension.js          # Compiled word counter
-```
+Development loop, architecture, theme-agnostic color strategy, and the release/publishing workflow live in [CONTRIBUTING.md](CONTRIBUTING.md).

@@ -2,7 +2,7 @@
   "name": "letterpress-markdown",
   "displayName": "Letterpress Markdown",
   "description": "Centered, typographically refined markdown preview with word counter",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "publisher": "rsomani95",
   "license": "MIT",
   "icon": "icon.png",
@@ -22,12 +22,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/rsomani95/home-manager.git",
-    "directory": "vscode-themes/letterpress-markdown"
+    "url": "https://github.com/rsomani95/letterpress-markdown.git"
   },
-  "homepage": "https://github.com/rsomani95/home-manager/tree/main/vscode-themes/letterpress-markdown",
+  "homepage": "https://github.com/rsomani95/letterpress-markdown#readme",
   "bugs": {
-    "url": "https://github.com/rsomani95/home-manager/issues"
+    "url": "https://github.com/rsomani95/letterpress-markdown/issues"
   },
   "galleryBanner": {
     "color": "#0d1117",
@@ -35,6 +34,9 @@
   },
   "extensionKind": [
     "workspace"
+  ],
+  "extensionPack": [
+    "bierner.markdown-checkbox"
   ],
   "main": "./dist/extension.js",
   "activationEvents": [
