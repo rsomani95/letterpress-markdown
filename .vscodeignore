@@ -11,6 +11,10 @@ dist-vsix/**
 # Design prototypes (not shipped)
 prototypes/**
 
+# Demo media (shown in README via raw GitHub URL, not bundled)
+demo.gif
+demo.mp4
+
 # Dev tooling
 node_modules/**
 package-lock.json
